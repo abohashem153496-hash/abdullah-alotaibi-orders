@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم والإعدادات</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+        .header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        h2 {
+            color: #0f172a;
+            margin: 0;
+            font-size: 22px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        .clear-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+        .clear-btn:hover {
+            background-color: var(--danger-hover);
+        }
+        .back-btn {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+        .back-btn:hover {
+            background-color: #cbd5e1;
+        }
+        .table-responsive {
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            text-align: right;
+        }
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+        th {
+            background-color: #f1f5f9;
+            color: #334155;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .no-data {
+            text-align: center;
+            color: #64748b;
+            padding: 30px;
+            font-size: 16px;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-saudi {
+            background-color: #e0f2fe;
+            color: #0369a1;
+        }
+        .badge-resident {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-flex">
+        <h2>لوحة تحكم الطلبات الواردة والإعدادات</h2>
+        <div class="btn-group">
+            <a href="index.html" class="btn back-btn">&larr; صفحة تسجيل الطلب</a>
+            <button class="btn clear-btn" onclick="clearOrders()">حذف جميع الطلبات</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>اسم العميل</th>
+                    <th>المكان (العنوان)</th>
+                    <th>نوع العربية</th>
+                    <th>الحالة</th>
+                    <th>وقت وتاريخ الإرسال</th>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+                <!-- سيتم تعبئة البيانات ديناميكياً هنا -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function loadOrders() {
+        const tbody = document.getElementById('ordersTableBody');
+        const orders = JSON.parse(localStorage.getItem('control_orders')) || [];
+
+        tbody.innerHTML = '';
+
+        if (orders.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="no-data">لا توجد طلبات مرسلة حتى الآن.</td></tr>`;
+            return;
+        }
+
+        orders.forEach((order, index) => {
+            const badgeClass = order.nationality === 'سعودي' ? 'badge-saudi' : 'badge-resident';
+            const row = `<tr>
+                <td>${index + 1}</td>
+                <td><strong>${escapeHtml(order.name)}</strong></td>
+                <td>${escapeHtml(order.address)}</td>
+                <td>${escapeHtml(order.car)}</td>
+                <td><span class="badge ${badgeClass}">${escapeHtml(order.nationality)}</span></td>
+                <td>${order.timestamp}</td>
+            </tr>`;
+            tbody.innerHTML += row;
+        });
+    }
+
+    function clearOrders() {
+        if (confirm('هل أنت متأكد من حذف جميع الطلبات المسجلة؟')) {
+            localStorage.removeItem('control_orders');
+            loadOrders();
+        }
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    }
+
+    loadOrders();
+    setInterval(loadOrders, 4000);
+</script>
+
+</body>
+</html>
