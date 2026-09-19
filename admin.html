@@ -122,64 +122,96 @@
         </div>
 
         <div id="ordersContainer">
-            <!-- Dynamic Orders -->
+            <div class="empty-state">جاري تحميل الطلبات من السحابة...</div>
         </div>
     </div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
     <script>
+        // إعدادات فايربيس الخاصة بك (ضع نفس إعدادات مشروعك هنا)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         // Password Protection on Page Load
         window.onload = function() {
             const password = prompt("الرجاء إدخال كلمة المرور السرية للوصول إلى لوحة التحكم:");
             if (password === '1234' || password === 'admin') {
-                renderOrders();
+                listenToOrders();
             } else {
                 alert("كلمة المرور غير صحيحة!");
                 window.location.href = 'index.html';
             }
         };
 
-        function renderOrders() {
+        // جلب ومراقبة الطلبات لحظياً من قاعدة بيانات Firebase السحابية
+        function listenToOrders() {
             const container = document.getElementById('ordersContainer');
-            let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
-            
-            if (orders.length === 0) {
-                container.innerHTML = '<div class="empty-state">لا توجد طلبات مسجلة حتى الآن.</div>';
-                return;
-            }
+            const ordersRef = database.ref('orders');
 
-            let html = '';
-            orders.forEach((ord, index) => {
-                const waMessage = `طلب جديد رقم #${ord.orderNumber}%0a- الاسم: ${ord.fullName}%0a- الجوال: ${ord.phone}%0a- المدينة: ${ord.city}%0a- السيارة: ${ord.carModel}%0a- نوع العميل: ${ord.clientType}%0a- الدفع: ${ord.payMethod}%0a- الوقت: ${ord.date}`;
+            ordersRef.on('value', (snapshot) => {
+                const data = snapshot.val();
                 
-                html += `
-                    <div class="order-card">
-                        <div class="order-card-header">
-                            <span>طلب رقم #${ord.orderNumber} (ترتيب: ${index + 1})</span>
-                            <span>${ord.date}</span>
+                if (!data) {
+                    container.innerHTML = '<div class="empty-state">لا توجد طلبات مسجلة حتى الآن.</div>';
+                    return;
+                }
+
+                // تحويل الكائن القادم من قاعدة البيانات إلى مصفوفة وترتيبها من الأحدث للأقدم
+                let orders = [];
+                for (let key in data) {
+                    orders.push(data[key]);
+                }
+                orders.sort((a, b) => b.id - a.id);
+
+                let html = '';
+                orders.forEach((ord, index) => {
+                    const waMessage = `طلب جديد رقم #${ord.orderNumber}%0a- الاسم: ${ord.fullName}%0a- الجوال: ${ord.phone}%0a- المدينة: ${ord.city}%0a- السيارة: ${ord.carModel}%0a- نوع العميل: ${ord.clientType}%0a- الدفع: ${ord.payMethod}%0a- الوقت: ${ord.date}`;
+                    
+                    html += `
+                        <div class="order-card">
+                            <div class="order-card-header">
+                                <span>طلب رقم #${ord.orderNumber} (ترتيب: ${index + 1})</span>
+                                <span>${ord.date}</span>
+                            </div>
+                            <div class="order-card-body">
+                                <p>الاسم: <span>${ord.fullName}</span></p>
+                                <p>الجوال: <span>${ord.phone}</span></p>
+                                <p>المدينة: <span>${ord.city}</span></p>
+                                <p>السيارة المطلوبة: <span>${ord.carModel}</span></p>
+                                <p>نوع العميل: <span>${ord.clientType}</span> | طريقة الدفع: <span>${ord.payMethod}</span></p>
+                            </div>
+                            <div class="order-actions">
+                                <a href="https://wa.me/?text=${waMessage}" target="_blank" class="wa-btn">إرسال للواتساب</a>
+                                <button class="del-btn" onclick="deleteOrder(${ord.id})">حذف الطلب</button>
+                            </div>
                         </div>
-                        <div class="order-card-body">
-                            <p>الاسم: <span>${ord.fullName}</span></p>
-                            <p>الجوال: <span>${ord.phone}</span></p>
-                            <p>المدينة: <span>${ord.city}</span></p>
-                            <p>السيارة المطلوبة: <span>${ord.carModel}</span></p>
-                            <p>نوع العميل: <span>${ord.clientType}</span> | طريقة الدفع: <span>${ord.payMethod}</span></p>
-                        </div>
-                        <div class="order-actions">
-                            <a href="https://wa.me/?text=${waMessage}" target="_blank" class="wa-btn">إرسال للواتساب</a>
-                            <button class="del-btn" onclick="deleteOrder(${ord.id})">حذف الطلب</button>
-                        </div>
-                    </div>
-                `;
+                    `;
+                });
+                container.innerHTML = html;
             });
-            container.innerHTML = html;
         }
 
         function deleteOrder(id) {
-            if (confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) {
-                let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
-                orders = orders.filter(o => o.id !== id);
-                localStorage.setItem('luxury_car_orders', JSON.stringify(orders));
-                renderOrders();
+            if (confirm("هل أنت متأكد من حذف هذا الطلب نهائياً من السحابة؟")) {
+                database.ref('orders/' + id).remove()
+                    .catch((error) => {
+                        alert("حدث خطأ أثناء الحذف.");
+                        console.error(error);
+                    });
             }
         }
     </script>
