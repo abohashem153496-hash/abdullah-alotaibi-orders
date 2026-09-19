@@ -3,177 +3,337 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل بيانات الطلب</title>
+    <title>معرض السيارات الفاخرة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-color: #1e293b;
-            --border-color: #cbd5e1;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
         }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 20px;
+            background-color: #0b0b0b;
+            color: #f1f1f1;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            justify-content: flex-start;
+            padding: 20px 10px;
         }
-        .form-container {
-            background: var(--card-bg);
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        .container {
             width: 100%;
-            max-width: 420px;
-            box-sizing: border-box;
+            max-width: 480px;
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 20px;
+            padding: 25px 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            position: relative;
         }
-        h2 {
+        .header {
             text-align: center;
-            color: #0f172a;
             margin-bottom: 25px;
-            font-size: 24px;
+        }
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            border: 1px solid #d4af37;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            background: rgba(212, 175, 55, 0.05);
+        }
+        .icon-box svg {
+            width: 30px;
+            height: 30px;
+            fill: #d4af37;
+        }
+        .title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+        .subtitle-box {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            border-right: 3px solid #d4af37;
+        }
+        .subtitle-box h3 {
+            font-size: 16px;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+        .subtitle-box p {
+            font-size: 13px;
+            color: #999;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
-        label {
+        .form-label {
             display: block;
+            font-size: 13px;
+            color: #ccc;
             margin-bottom: 8px;
-            color: #475569;
             font-weight: 600;
-            font-size: 14px;
         }
-        input[type="text"], select {
-            width: 100%;
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            color: #aaa;
             padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 15px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            background-color: #fff;
-        }
-        input[type="text"]:focus, select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
-        }
-        button {
-            width: 100%;
-            background-color: var(--primary);
-            color: white;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 5px;
-        }
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-        .success-msg {
-            display: none;
-            margin-top: 20px;
-            padding: 12px;
-            background-color: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-            border-radius: 8px;
+            transition: all 0.3s ease;
             text-align: center;
-            font-weight: 500;
         }
-        .nav-links {
-            text-align: center;
-            margin-top: 20px;
+        .option-btn.active {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #d4af37;
+            color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
         }
-        .nav-links a {
-            color: var(--primary);
-            text-decoration: none;
+        .text-input {
+            width: 100%;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 12px 15px;
+            color: #fff;
             font-size: 14px;
-            font-weight: 600;
+            outline: none;
+            transition: border-color 0.3s;
         }
-        .nav-links a:hover {
-            text-decoration: underline;
+        .text-input:focus {
+            border-color: #d4af37;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #d4af37;
+            color: #0b0b0b;
+            border: none;
+            border-radius: 12px;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s, transform 0.1s;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+        .submit-btn:hover {
+            background: #e5c158;
+        }
+        .security-note {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .security-dot {
+            width: 8px;
+            height: 8px;
+            background: #2ecc71;
+            border-radius: 50%;
+        }
+        
+        /* Success Screen */
+        .success-screen {
+            display: none;
+            text-align: center;
+            padding: 30px 10px;
+        }
+        .success-icon-box {
+            width: 75px;
+            height: 75px;
+            background: rgba(46, 204, 113, 0.1);
+            border: 2px solid #2ecc71;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+        }
+        .success-icon-box svg {
+            width: 40px;
+            height: 40px;
+            fill: #2ecc71;
+        }
+        .success-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .success-desc {
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        .success-btn {
+            background: transparent;
+            border: 1px solid #d4af37;
+            color: #d4af37;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .success-btn:hover {
+            background: rgba(212, 175, 55, 0.1);
+        }
+        .footer-credit {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #555;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>تسجيل بيانات الطلب</h2>
-    <form id="dataForm">
-        <div class="form-group">
-            <label for="fullName">الاسم:</label>
-            <input type="text" id="fullName" required placeholder="أدخل الاسم الكامل">
+    <div class="container" id="formContainer">
+        <div class="header">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24"><path d="M19 16.5C19 17.88 17.88 19 16.5 19C15.12 19 14 17.88 14 16.5C14 15.12 15.12 14 16.5 14C17.88 14 19 15.12 19 16.5M5 19C3.62 19 2.5 17.88 2.5 16.5C2.5 15.12 3.62 14 5 14C6.38 14 7.5 15.12 7.5 16.5C7.5 17.88 6.38 19 5 19M19.5 9.5H17V6H6.5V9.5H4.5C3.67 9.5 3 10.17 3 11V14.5H4.5C4.5 15.88 5.62 17 7 17C8.38 17 9.5 15.88 9.5 14.5H14.5C14.5 15.88 15.62 17 17 17C18.38 17 19.5 15.88 19.5 14.5H21V11C21 10.17 20.33 9.5 19.5 9.5M15 8.5H16.85L18.35 9.5H15V8.5Z"/></svg>
+            </div>
+            <h1 class="title">معرض السيارات الفاخرة</h1>
         </div>
 
-        <div class="form-group">
-            <label for="address">المكان (العنوان):</label>
-            <input type="text" id="address" required placeholder="أدخل العنوان أو المكان">
+        <div class="subtitle-box">
+            <h3>بيانات الطلب</h3>
+            <p>أدخل بياناتك وسنتواصل معك فوراً</p>
         </div>
 
-        <div class="form-group">
-            <label for="carType">نوع العربية:</label>
-            <input type="text" id="carType" required placeholder="أدخل نوع السيارة">
-        </div>
+        <form id="carOrderForm" onsubmit="handleOrderSubmit(event)">
+            <div class="form-group">
+                <label class="form-label">نوع العميل *</label>
+                <div class="options-grid">
+                    <button type="button" class="option-btn active" onclick="selectOption('clientType', 'أفراد', this)">أفراد</button>
+                    <button type="button" class="option-btn" onclick="selectOption('clientType', 'شركات', this)">شركات</button>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label for="nationalityType">الإقامة / الجنسية:</label>
-            <select id="nationalityType" required>
-                <option value="">-- اختر الحالة --</option>
-                <option value="سعودي">سعودي</option>
-                <option value="مقيم">مقيم</option>
-            </select>
-        </div>
+            <div class="form-group">
+                <label class="form-label">طريقة الدفع *</label>
+                <div class="options-grid">
+                    <button type="button" class="option-btn active" onclick="selectOption('payMethod', 'كاش', this)">كاش</button>
+                    <button type="button" class="option-btn" onclick="selectOption('payMethod', 'تمويل', this)">تمويل</button>
+                </div>
+            </div>
 
-        <button type="submit">إرسال الطلب</button>
-        <div id="successMsg" class="success-msg">تم إرسال الطلب وحفظه بنجاح!</div>
-    </form>
-    
-    <div class="nav-links">
-        <a href="control.html">الانتقال إلى لوحة التحكم والإعدادات &larr;</a>
+            <div class="form-group">
+                <label class="form-label">الاسم الكامل *</label>
+                <input type="text" id="fullName" class="text-input" placeholder="محمد أحمد" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">رقم الجوال *</label>
+                <input type="tel" id="phoneNumber" class="text-input" placeholder="05xxxxxxxx" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">المدينة *</label>
+                <input type="text" id="city" class="text-input" placeholder="الدمام" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">السيارة المطلوبة *</label>
+                <input type="text" id="carModel" class="text-input" placeholder="BMW" required>
+            </div>
+
+            <button type="submit" class="submit-btn">أرسل طلبك &gt;</button>
+
+            <div class="security-note">
+                <div class="security-dot"></div>
+                <span>آمن وموثوق • لن يتم مشاركة بياناتك</span>
+            </div>
+        </form>
     </div>
-</div>
 
-<script>
-    document.getElementById('dataForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    <!-- Success Screen -->
+    <div class="container success-screen" id="successScreen">
+        <div class="success-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+        </div>
+        <h2 class="success-title">تم استلام طلبك بنجاح</h2>
+        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات قريباً بأفضل العروض المتاحة.</p>
+        <button class="success-btn" onclick="resetForm()">شكراً لاهتمامك بمعرضنا</button>
+    </div>
 
-        const newOrder = {
-            id: Date.now(),
-            name: document.getElementById('fullName').value,
-            address: document.getElementById('address').value,
-            car: document.getElementById('carType').value,
-            nationality: document.getElementById('nationalityType').value,
-            timestamp: new Date().toLocaleString('ar-SA', { 
-                year: 'numeric', month: '2-digit', day: '2-digit', 
-                hour: '2-digit', minute: '2-digit', second: '2-digit' 
-            })
+    <div class="footer-credit">© 2026 معرض السيارات الفاخرة - جميع الحقوق محفوظة</div>
+
+    <script>
+        let formDataState = {
+            clientType: 'أفراد',
+            payMethod: 'كاش'
         };
 
-        let orders = JSON.parse(localStorage.getItem('control_orders')) || [];
-        orders.unshift(newOrder);
-        localStorage.setItem('control_orders', JSON.stringify(orders));
+        function selectOption(field, value, element) {
+            formDataState[field] = value;
+            const parent = element.parentElement;
+            parent.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+            element.classList.add('active');
+        }
 
-        const msg = document.getElementById('successMsg');
-        msg.style.display = 'block';
-        document.getElementById('dataForm').reset();
+        function handleOrderSubmit(e) {
+            e.preventDefault();
+            
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-SA');
+            const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
 
-        setTimeout(() => {
-            msg.style.display = 'none';
-        }, 3500);
-    });
-</script>
+            const orderData = {
+                id: Date.now(),
+                orderNumber: Math.floor(1000 + Math.random() * 9000),
+                date: `${dateStr} - ${timeStr}`,
+                clientType: formDataState.clientType,
+                payMethod: formDataState.payMethod,
+                fullName: document.getElementById('fullName').value,
+                phone: document.getElementById('phoneNumber').value,
+                city: document.getElementById('city').value,
+                carModel: document.getElementById('carModel').value
+            };
 
+            let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
+            orders.unshift(orderData);
+            localStorage.setItem('luxury_car_orders', JSON.stringify(orders));
+
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('carOrderForm').reset();
+            document.getElementById('successScreen').style.display = 'none';
+            document.getElementById('formContainer').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
