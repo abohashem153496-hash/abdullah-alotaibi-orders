@@ -289,7 +289,26 @@
 
     <div class="footer-credit">© 2026 معرض السيارات الفاخرة - جميع الحقوق محفوظة</div>
 
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
     <script>
+        // إعدادات فايربيس الخاصة بك (ضع بيانات مشروعك هنا)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            databaseURL: "YOUR_DATABASE_URL",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         let formDataState = {
             clientType: 'أفراد',
             payMethod: 'كاش'
@@ -321,12 +340,16 @@
                 carModel: document.getElementById('carModel').value
             };
 
-            let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
-            orders.unshift(orderData);
-            localStorage.setItem('luxury_car_orders', JSON.stringify(orders));
-
-            document.getElementById('formContainer').style.display = 'none';
-            document.getElementById('successScreen').style.display = 'block';
+            // إرسال البيانات مباشرة إلى قاعدة بيانات Firebase السحابية
+            database.ref('orders/' + orderData.id).set(orderData)
+                .then(() => {
+                    document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('successScreen').style.display = 'block';
+                })
+                .catch((error) => {
+                    alert("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.");
+                    console.error(error);
+                });
         }
 
         function resetForm() {
