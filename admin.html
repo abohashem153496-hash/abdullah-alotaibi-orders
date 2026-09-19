@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - إدارة الطلبات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+        body {
+            background-color: #0b0b0b;
+            color: #f1f1f1;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .wrapper {
+            width: 100%;
+            max-width: 700px;
+        }
+        .dashboard-header {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+        }
+        .dashboard-header h1 {
+            font-size: 20px;
+            color: #d4af37;
+        }
+        .back-btn {
+            background: #1e1e1e;
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .order-card {
+            background: #141414;
+            border: 1px solid #262626;
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #262626;
+            padding-bottom: 8px;
+        }
+        .order-card-body p {
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #ddd;
+        }
+        .order-card-body span {
+            color: #d4af37;
+            font-weight: 600;
+        }
+        .order-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .wa-btn {
+            background: #25d366;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .del-btn {
+            background: #e74c3c;
+            color: #fff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .empty-state {
+            text-align: center;
+            color: #777;
+            padding: 40px;
+            background: #141414;
+            border-radius: 12px;
+            border: 1px solid #262626;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <div class="dashboard-header">
+            <h1>لوحة التحكم - إدارة الطلبات</h1>
+            <a href="index.html" class="back-btn">الذهاب للموقع</a>
+        </div>
+
+        <div id="ordersContainer">
+            <!-- Dynamic Orders -->
+        </div>
+    </div>
+
+    <script>
+        // Password Protection on Page Load
+        window.onload = function() {
+            const password = prompt("الرجاء إدخال كلمة المرور السرية للوصول إلى لوحة التحكم:");
+            if (password === '1234' || password === 'admin') {
+                renderOrders();
+            } else {
+                alert("كلمة المرور غير صحيحة!");
+                window.location.href = 'index.html';
+            }
+        };
+
+        function renderOrders() {
+            const container = document.getElementById('ordersContainer');
+            let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
+            
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="empty-state">لا توجد طلبات مسجلة حتى الآن.</div>';
+                return;
+            }
+
+            let html = '';
+            orders.forEach((ord, index) => {
+                const waMessage = `طلب جديد رقم #${ord.orderNumber}%0a- الاسم: ${ord.fullName}%0a- الجوال: ${ord.phone}%0a- المدينة: ${ord.city}%0a- السيارة: ${ord.carModel}%0a- نوع العميل: ${ord.clientType}%0a- الدفع: ${ord.payMethod}%0a- الوقت: ${ord.date}`;
+                
+                html += `
+                    <div class="order-card">
+                        <div class="order-card-header">
+                            <span>طلب رقم #${ord.orderNumber} (ترتيب: ${index + 1})</span>
+                            <span>${ord.date}</span>
+                        </div>
+                        <div class="order-card-body">
+                            <p>الاسم: <span>${ord.fullName}</span></p>
+                            <p>الجوال: <span>${ord.phone}</span></p>
+                            <p>المدينة: <span>${ord.city}</span></p>
+                            <p>السيارة المطلوبة: <span>${ord.carModel}</span></p>
+                            <p>نوع العميل: <span>${ord.clientType}</span> | طريقة الدفع: <span>${ord.payMethod}</span></p>
+                        </div>
+                        <div class="order-actions">
+                            <a href="https://wa.me/?text=${waMessage}" target="_blank" class="wa-btn">إرسال للواتساب</a>
+                            <button class="del-btn" onclick="deleteOrder(${ord.id})">حذف الطلب</button>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function deleteOrder(id) {
+            if (confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) {
+                let orders = JSON.parse(localStorage.getItem('luxury_car_orders') || '[]');
+                orders = orders.filter(o => o.id !== id);
+                localStorage.setItem('luxury_car_orders', JSON.stringify(orders));
+                renderOrders();
+            }
+        }
+    </script>
+</body>
+</html>
