@@ -235,16 +235,16 @@
             <div class="form-group">
                 <label class="form-label">نوع العميل *</label>
                 <div class="options-grid">
-                    <button type="button" class="option-btn active" onclick="selectOption('clientType', 'أفراد', this)">أفراد</button>
-                    <button type="button" class="option-btn" onclick="selectOption('clientType', 'شركات', this)">شركات</button>
+                    <button type="button" class="option-btn active" id="client_individuals" onclick="selectOption('clientType', 'أفراد', this)">أفراد</button>
+                    <button type="button" class="option-btn" id="client_companies" onclick="selectOption('clientType', 'شركات', this)">شركات</button>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">طريقة الدفع *</label>
                 <div class="options-grid">
-                    <button type="button" class="option-btn active" onclick="selectOption('payMethod', 'كاش', this)">كاش</button>
-                    <button type="button" class="option-btn" onclick="selectOption('payMethod', 'تمويل', this)">تمويل</button>
+                    <button type="button" class="option-btn active" id="pay_cash" onclick="selectOption('payMethod', 'كاش', this)">كاش</button>
+                    <button type="button" class="option-btn" id="pay_finance" onclick="selectOption('payMethod', 'تمويل', this)">تمويل</button>
                 </div>
             </div>
 
@@ -294,7 +294,6 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 
     <script>
-        // إعدادات فايربيس الخاصة بك (ضع بيانات مشروعك هنا)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -305,7 +304,6 @@
             appId: "YOUR_APP_ID"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
@@ -340,7 +338,6 @@
                 carModel: document.getElementById('carModel').value
             };
 
-            // إرسال البيانات مباشرة إلى قاعدة بيانات Firebase السحابية
             database.ref('orders/' + orderData.id).set(orderData)
                 .then(() => {
                     document.getElementById('formContainer').style.display = 'none';
