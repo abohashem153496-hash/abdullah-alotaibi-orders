@@ -44,7 +44,7 @@
             padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 15px;
         }
-        .stats-group { display: flex; gap: 12px; flex-wrap: wrap; }
+        .stats-group { display: flex; gap: 10px; flex-wrap: wrap; }
         .stat-badge {
             background: #1c1c1c; border: 1px solid #333; padding: 6px 12px;
             border-radius: 8px; font-size: 12px; color: #aaa;
@@ -130,6 +130,7 @@
         <!-- Controls & Search Bar Area -->
         <div class="controls-panel">
             <div class="stats-group">
+                <div class="stat-badge">الكل: <span id="statTotal">0</span></div>
                 <div class="stat-badge">الجديدة: <span id="statNew">0</span></div>
                 <div class="stat-badge">تم التواصل: <span id="statContacted">0</span></div>
                 <div class="stat-badge">المحفوظات: <span id="statSaved">0</span></div>
@@ -141,10 +142,11 @@
             </div>
 
             <div class="nav-tabs">
-                <button class="tab-btn active" onclick="switchTab('all', this)">الطلبات الجديدة</button>
+                <button class="tab-btn active" onclick="switchTab('new_only', this)">الطلبات الجديدة</button>
                 <button class="tab-btn" onclick="switchTab('contacted', this)">تم التواصل</button>
                 <button class="tab-btn" onclick="switchTab('saved', this)">المحفوظات</button>
                 <button class="tab-btn" onclick="switchTab('archived', this)">الأرشيف</button>
+                <button class="tab-btn" onclick="switchTab('all', this)" style="border-color: #d4af37; color: #d4af37;">جميع الطلبات</button>
             </div>
         </div>
 
@@ -171,7 +173,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let currentFilter = 'all'; // all, contacted, saved, archived
+        let currentFilter = 'new_only'; // new_only, contacted, saved, archived, all
         let allOrdersData = {};
 
         function checkPassword() {
@@ -203,14 +205,16 @@
         }
 
         function updateStats() {
-            let countNew = 0, countContacted = 0, countSaved = 0, countArchived = 0;
+            let total = 0, countNew = 0, countContacted = 0, countSaved = 0, countArchived = 0;
             Object.values(allOrdersData).forEach(o => {
+                total++;
                 const st = o.status || 'جديد';
                 if (st === 'أرشيف') countArchived++;
                 else if (st === 'محفوظ') countSaved++;
                 else if (st === 'تم التواصل') countContacted++;
                 else countNew++;
             });
+            document.getElementById('statTotal').innerText = total;
             document.getElementById('statNew').innerText = countNew;
             document.getElementById('statContacted').innerText = countContacted;
             document.getElementById('statSaved').innerText = countSaved;
@@ -228,10 +232,11 @@
                 const status = order.status || 'جديد';
                 
                 let matchTab = true;
-                if (currentFilter === 'all') matchTab = (status !== 'أرشيف' && status !== 'محفوظ');
+                if (currentFilter === 'new_only') matchTab = (status !== 'أرشيف' && status !== 'محفوظ' && status !== 'تم التواصل');
                 if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
                 if (currentFilter === 'saved') matchTab = status === 'محفوظ';
                 if (currentFilter === 'archived') matchTab = status === 'أرشيف';
+                if (currentFilter === 'all') matchTab = true; // يعرض كل الطلبات بلا استثناء
 
                 if (!matchTab) return false;
 
@@ -251,17 +256,14 @@
                 const orderNum = order.orderNumber || key;
                 const orderDate = order.date || 'غير محدد';
                 
-                // تنظيف رقم الهاتف لمراسلة العميل مباشرة
                 let cleanPhone = (order.phone || '').replace(/\D/g, '');
                 if (cleanPhone.startsWith('0')) {
                     cleanPhone = '966' + cleanPhone.substring(1);
                 }
 
-                // رسالة للتواصل مع العميل مباشرة
                 const clientMsg = `مرحباً بك يا أستاذ/ة ${order.fullName}، بخصوص طلبك رقم (#${orderNum}) لسيارة ${order.carModel} في معرض أهل كار، نحن نسعد بخدمتك ونود تأكيد تفاصيل طلبك.`;
                 const waClientLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(clientMsg)}`;
 
-                // رسالة لتحويل تفاصيل الطلب لأي شخص آخر
                 const forwardText = `🚗 تفاصيل طلب من معرض أهل كار:\n\n` +
                     `📋 رقم الطلب: #${orderNum}\n` +
                     `👤 اسم العميل: ${order.fullName}\n` +
@@ -310,7 +312,6 @@
             });
         }
 
-        // حفظ تفاصيل الطلب الحالي في ملف نصي مستقل لوحده مع التاريخ والوقت
         function saveSingleOrderFile(orderNum, textData) {
             const blob = new Blob([textData], { type: 'text/plain;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
