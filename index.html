@@ -74,19 +74,60 @@
         .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
         
         /* Success Screen */
-        .success-screen { display: none; text-align: center; padding: 30px 10px; }
+        .success-screen { display: none; text-align: center; padding: 20px 10px; }
         .success-icon-box {
-            width: 75px; height: 75px; background: rgba(46, 204, 113, 0.1);
+            width: 70px; height: 70px; background: rgba(46, 204, 113, 0.1);
             border: 2px solid #2ecc71; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;
         }
-        .success-icon-box svg { width: 40px; height: 40px; fill: #2ecc71; }
-        .success-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 10px; }
-        .success-desc { font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 20px; }
-        .order-info-box {
-            background: #1a1a1a; border: 1px dashed #d4af37; border-radius: 10px;
-            padding: 12px; margin-bottom: 20px; font-size: 15px; color: #d4af37; font-weight: 700;
+        .success-icon-box svg { width: 35px; height: 35px; fill: #2ecc71; }
+        .success-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+        
+        /* Order Number Box with Copy Button */
+        .order-number-card {
+            background: #1a1a1a;
+            border: 1px dashed #d4af37;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
         }
+        .order-number-text {
+            font-size: 16px;
+            color: #d4af37;
+            font-weight: 700;
+            direction: ltr;
+            text-align: right;
+        }
+        .copy-code-btn {
+            background: #d4af37;
+            color: #0b0b0b;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s;
+            white-space: nowrap;
+        }
+        .copy-code-btn:hover {
+            background: #e5c158;
+        }
+        .instruction-note {
+            font-size: 13px;
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            background: rgba(212, 175, 55, 0.05);
+            padding: 10px;
+            border-radius: 8px;
+            border-right: 2px solid #d4af37;
+        }
+
         .success-btn {
             background: transparent; border: 1px solid #d4af37; color: #d4af37;
             width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
@@ -162,8 +203,20 @@
             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
         </div>
         <h2 class="success-title">تم استلام طلبك بنجاح</h2>
-        <div class="order-info-box" id="assignedOrderNum">رقم الطلب: #1000</div>
-        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
+        
+        <div class="order-number-card">
+            <div>
+                <span style="font-size: 13px; color: #aaa; display: block; margin-bottom: 3px;">رقم الطلب الخاص بحضرتك:</span>
+                <span class="order-number-text" id="displayOrderNum">#3871</span>
+            </div>
+            <button class="copy-code-btn" onclick="copyOrderNumber()">نسخ الرقم</button>
+        </div>
+
+        <div class="instruction-note">
+            الرجاء الاحتفاظ برقم الطلب الخاص بحضرتك للمتابعة والاستفسار عن حالة طلبك في معرض أهل كار في أي وقت.
+        </div>
+
+        <p class="success-desc" style="font-size: 13px; color: #888; margin-bottom: 20px;">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
         <button class="success-btn" onclick="resetForm()">تقديم طلب جديد</button>
     </div>
 
@@ -188,6 +241,7 @@
         const database = firebase.database();
 
         let formDataState = { clientType: 'أفراد', payMethod: 'كاش' };
+        let currentOrderNum = '';
 
         function selectOption(field, value, element) {
             formDataState[field] = value;
@@ -202,11 +256,11 @@
             btn.innerText = 'جاري الإرسال...';
             
             const now = new Date();
-            const orderNum = Math.floor(1000 + Math.random() * 9000);
+            currentOrderNum = String(Math.floor(1000 + Math.random() * 9000));
 
             const orderData = {
                 id: Date.now(),
-                orderNumber: orderNum,
+                orderNumber: currentOrderNum,
                 date: now.toLocaleDateString('ar-SA') + ' - ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
                 clientType: formDataState.clientType,
                 payMethod: formDataState.payMethod,
@@ -220,7 +274,7 @@
             database.ref('orders/' + orderData.id).set(orderData)
                 .then(() => {
                     document.getElementById('formContainer').style.display = 'none';
-                    document.getElementById('assignedOrderNum').innerText = `رقم الطلب: #${orderNum}`;
+                    document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
                     document.getElementById('successScreen').style.display = 'block';
                     btn.disabled = false;
                     btn.innerText = 'أرسل طلبك >';
@@ -230,6 +284,12 @@
                     btn.disabled = false;
                     btn.innerText = 'أرسل طلبك >';
                 });
+        }
+
+        function copyOrderNumber() {
+            navigator.clipboard.writeText(currentOrderNum).then(() => {
+                alert('تم نسخ رقم الطلب بنجاح! يمكنك الاحتفاظ به للمتابعة والاستفسار.');
+            });
         }
 
         function resetForm() {
