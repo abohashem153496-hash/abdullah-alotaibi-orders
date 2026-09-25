@@ -6,12 +6,7 @@
     <title>أهل كار - معرض السيارات الفاخرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Cairo', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body {
             background-color: #0b0b0b;
             color: #f1f1f1;
@@ -24,196 +19,80 @@
         }
         .container {
             width: 100%;
-            max-width: 480px;
+            max-width: 500px;
             background: #141414;
-            border: 1px solid #262626;
+            border: 1px solid rgba(212, 175, 55, 0.3);
             border-radius: 20px;
             padding: 25px 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             position: relative;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
+        .header { text-align: center; margin-bottom: 25px; }
         .icon-box {
-            width: 60px;
-            height: 60px;
-            border: 1px solid #d4af37;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 12px auto;
-            background: rgba(212, 175, 55, 0.05);
+            width: 60px; height: 60px;
+            border: 1px solid #d4af37; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 12px auto; background: rgba(212, 175, 55, 0.05);
         }
-        .icon-box svg {
-            width: 30px;
-            height: 30px;
-            fill: #d4af37;
-        }
-        .title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #d4af37;
-            letter-spacing: 0.5px;
-        }
+        .icon-box svg { width: 30px; height: 30px; fill: #d4af37; }
+        .title { font-size: 22px; font-weight: 700; color: #d4af37; letter-spacing: 0.5px; }
         .subtitle-box {
-            background: #1a1a1a;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-            border-right: 3px solid #d4af37;
+            background: #1a1a1a; border-radius: 12px; padding: 15px;
+            margin-bottom: 20px; text-align: center; border-right: 3px solid #d4af37;
         }
-        .subtitle-box h3 {
-            font-size: 16px;
-            color: #ffffff;
-            margin-bottom: 5px;
-        }
-        .subtitle-box p {
-            font-size: 13px;
-            color: #999;
-        }
-        .form-group {
-            margin-bottom: 18px;
-        }
-        .form-label {
-            display: block;
-            font-size: 13px;
-            color: #ccc;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .subtitle-box h3 { font-size: 16px; color: #ffffff; margin-bottom: 5px; }
+        .subtitle-box p { font-size: 13px; color: #999; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 600; }
+        .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .option-btn {
-            background: #1e1e1e;
-            border: 1px solid #333;
-            color: #aaa;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
+            background: #1e1e1e; border: 1px solid #333; color: #aaa;
+            padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.3s ease; text-align: center;
         }
         .option-btn.active {
-            background: rgba(212, 175, 55, 0.1);
-            border-color: #d4af37;
-            color: #d4af37;
+            background: rgba(212, 175, 55, 0.1); border-color: #d4af37; color: #d4af37;
             box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
         }
         .text-input {
-            width: 100%;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 12px 15px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
+            width: 100%; background: #1e1e1e; border: 1px solid #333;
+            border-radius: 10px; padding: 12px 15px; color: #fff; font-size: 14px; outline: none;
             transition: border-color 0.3s;
         }
-        .text-input:focus {
-            border-color: #d4af37;
-        }
+        .text-input:focus { border-color: #d4af37; }
         .submit-btn {
-            width: 100%;
-            background: #d4af37;
-            color: #0b0b0b;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: background 0.3s, transform 0.1s;
+            width: 100%; background: #d4af37; color: #0b0b0b; border: none;
+            border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 700;
+            cursor: pointer; margin-top: 10px; transition: background 0.3s, transform 0.1s;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
         }
-        .submit-btn:active {
-            transform: scale(0.98);
-        }
-        .submit-btn:hover {
-            background: #e5c158;
-        }
+        .submit-btn:hover { background: #e5c158; }
         .security-note {
-            text-align: center;
-            font-size: 12px;
-            color: #777;
-            margin-top: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
+            text-align: center; font-size: 12px; color: #777; margin-top: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .security-dot {
-            width: 8px;
-            height: 8px;
-            background: #2ecc71;
-            border-radius: 50%;
-        }
+        .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
         
         /* Success Screen */
-        .success-screen {
-            display: none;
-            text-align: center;
-            padding: 30px 10px;
-        }
+        .success-screen { display: none; text-align: center; padding: 30px 10px; }
         .success-icon-box {
-            width: 75px;
-            height: 75px;
-            background: rgba(46, 204, 113, 0.1);
-            border: 2px solid #2ecc71;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px auto;
+            width: 75px; height: 75px; background: rgba(46, 204, 113, 0.1);
+            border: 2px solid #2ecc71; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;
         }
-        .success-icon-box svg {
-            width: 40px;
-            height: 40px;
-            fill: #2ecc71;
-        }
-        .success-title {
-            font-size: 22px;
-            font-weight: 700;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-        .success-desc {
-            font-size: 14px;
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 25px;
+        .success-icon-box svg { width: 40px; height: 40px; fill: #2ecc71; }
+        .success-title { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .success-desc { font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 20px; }
+        .order-info-box {
+            background: #1a1a1a; border: 1px dashed #d4af37; border-radius: 10px;
+            padding: 12px; margin-bottom: 20px; font-size: 15px; color: #d4af37; font-weight: 700;
         }
         .success-btn {
-            background: transparent;
-            border: 1px solid #d4af37;
-            color: #d4af37;
-            width: 100%;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
+            background: transparent; border: 1px solid #d4af37; color: #d4af37;
+            width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
         }
-        .success-btn:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-        .footer-credit {
-            margin-top: 15px;
-            font-size: 11px;
-            color: #555;
-            text-align: center;
-        }
+        .success-btn:hover { background: rgba(212, 175, 55, 0.1); }
+        .footer-credit { margin-top: 15px; font-size: 11px; color: #555; text-align: center; }
     </style>
 </head>
 <body>
@@ -228,23 +107,23 @@
 
         <div class="subtitle-box">
             <h3>بيانات الطلب</h3>
-            <p>أدخل بياناتك وسنتواصل معك فوراً</p>
+            <p>أدخل بياناتك وسنتواصل معك فوراً بأفضل العروض</p>
         </div>
 
         <form id="carOrderForm" onsubmit="handleOrderSubmit(event)">
             <div class="form-group">
                 <label class="form-label">نوع العميل *</label>
                 <div class="options-grid">
-                    <button type="button" class="option-btn active" id="client_individuals" onclick="selectOption('clientType', 'أفراد', this)">أفراد</button>
-                    <button type="button" class="option-btn" id="client_companies" onclick="selectOption('clientType', 'شركات', this)">شركات</button>
+                    <button type="button" class="option-btn active" onclick="selectOption('clientType', 'أفراد', this)">أفراد</button>
+                    <button type="button" class="option-btn" onclick="selectOption('clientType', 'شركات', this)">شركات</button>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="form-label">طريقة الدفع *</label>
                 <div class="options-grid">
-                    <button type="button" class="option-btn active" id="pay_cash" onclick="selectOption('payMethod', 'كاش', this)">كاش</button>
-                    <button type="button" class="option-btn" id="pay_finance" onclick="selectOption('payMethod', 'تمويل', this)">تمويل</button>
+                    <button type="button" class="option-btn active" onclick="selectOption('payMethod', 'كاش', this)">كاش</button>
+                    <button type="button" class="option-btn" onclick="selectOption('payMethod', 'تمويل', this)">تمويل</button>
                 </div>
             </div>
 
@@ -265,10 +144,10 @@
 
             <div class="form-group">
                 <label class="form-label">السيارة المطلوبة *</label>
-                <input type="text" id="carModel" class="text-input" placeholder="BMW" required>
+                <input type="text" id="carModel" class="text-input" placeholder="مثال: تويوتا كامري / BMW" required>
             </div>
 
-            <button type="submit" class="submit-btn">أرسل طلبك &gt;</button>
+            <button type="submit" class="submit-btn" id="submitBtn">أرسل طلبك &gt;</button>
 
             <div class="security-note">
                 <div class="security-dot"></div>
@@ -283,8 +162,9 @@
             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
         </div>
         <h2 class="success-title">تم استلام طلبك بنجاح</h2>
-        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً بأفضل العروض المتاحة.</p>
-        <button class="success-btn" onclick="resetForm()">شكراً لاهتمامك بمعرضنا</button>
+        <div class="order-info-box" id="assignedOrderNum">رقم الطلب: #1000</div>
+        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
+        <button class="success-btn" onclick="resetForm()">تقديم طلب جديد</button>
     </div>
 
     <div class="footer-credit">© 2026 أهل كار - جميع الحقوق محفوظة</div>
@@ -307,46 +187,48 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let formDataState = {
-            clientType: 'أفراد',
-            payMethod: 'كاش'
-        };
+        let formDataState = { clientType: 'أفراد', payMethod: 'كاش' };
 
         function selectOption(field, value, element) {
             formDataState[field] = value;
-            const parent = element.parentElement;
-            parent.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('active'));
+            element.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
             element.classList.add('active');
         }
 
         function handleOrderSubmit(e) {
             e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = 'جاري الإرسال...';
             
             const now = new Date();
-            const dateStr = now.toLocaleDateString('ar-SA');
-            const timeStr = now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+            const orderNum = Math.floor(1000 + Math.random() * 9000);
 
             const orderData = {
                 id: Date.now(),
-                orderNumber: Math.floor(1000 + Math.random() * 9000),
-                date: `${dateStr} - ${timeStr}`,
+                orderNumber: orderNum,
+                date: now.toLocaleDateString('ar-SA') + ' - ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
                 clientType: formDataState.clientType,
                 payMethod: formDataState.payMethod,
                 fullName: document.getElementById('fullName').value,
                 phone: document.getElementById('phoneNumber').value,
                 city: document.getElementById('city').value,
                 carModel: document.getElementById('carModel').value,
-                status: 'جديد' // حفظ حالة الطلب لتسهيل الأرشفة والمتابعة
+                status: 'جديد'
             };
 
             database.ref('orders/' + orderData.id).set(orderData)
                 .then(() => {
                     document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('assignedOrderNum').innerText = `رقم الطلب: #${orderNum}`;
                     document.getElementById('successScreen').style.display = 'block';
+                    btn.disabled = false;
+                    btn.innerText = 'أرسل طلبك >';
                 })
                 .catch((error) => {
-                    alert("حدث خطأ أثناء إرسال الطلب، يرجى المحاولة مرة أخرى.");
-                    console.error(error);
+                    alert("حدث خطأ أثناء إرسال الطلب.");
+                    btn.disabled = false;
+                    btn.innerText = 'أرسل طلبك >';
                 });
         }
 
