@@ -8,7 +8,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body {
-            background-color: #0b0b0b;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #080808 100%);
             color: #f1f1f1;
             min-height: 100vh;
             display: flex;
@@ -20,72 +20,92 @@
         .container {
             width: 100%;
             max-width: 500px;
-            background: #141414;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            padding: 25px 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            border-radius: 22px;
+            padding: 30px 22px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9), 0 0 25px rgba(212, 175, 55, 0.15);
+            backdrop-filter: blur(10px);
             position: relative;
         }
         .header { text-align: center; margin-bottom: 25px; }
         .icon-box {
-            width: 60px; height: 60px;
+            width: 65px; height: 65px;
             border: 1px solid #d4af37; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 12px auto; background: rgba(212, 175, 55, 0.05);
+            margin: 0 auto 12px auto; background: rgba(212, 175, 55, 0.08);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
         }
-        .icon-box svg { width: 30px; height: 30px; fill: #d4af37; }
-        .title { font-size: 22px; font-weight: 700; color: #d4af37; letter-spacing: 0.5px; }
+        .icon-box svg { width: 32px; height: 32px; fill: #d4af37; }
+        .title { font-size: 24px; font-weight: 900; color: #d4af37; letter-spacing: 1px; }
+        
         .subtitle-box {
-            background: #1a1a1a; border-radius: 12px; padding: 15px;
-            margin-bottom: 20px; text-align: center; border-right: 3px solid #d4af37;
+            background: #141414; border-radius: 12px; padding: 15px;
+            margin-bottom: 22px; text-align: center; border-right: 3px solid #d4af37;
+            border: 1px solid rgba(255,255,255,0.05);
         }
-        .subtitle-box h3 { font-size: 16px; color: #ffffff; margin-bottom: 5px; }
-        .subtitle-box p { font-size: 13px; color: #999; }
+        .subtitle-box h3 { font-size: 16px; color: #ffffff; margin-bottom: 4px; font-weight: 700; }
+        .subtitle-box p { font-size: 13px; color: #aaa; }
+        
         .form-group { margin-bottom: 18px; }
-        .form-label { display: block; font-size: 13px; color: #ccc; margin-bottom: 8px; font-weight: 600; }
+        .form-label { display: block; font-size: 13px; color: #ddd; margin-bottom: 8px; font-weight: 600; }
+        
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .option-btn {
-            background: #1e1e1e; border: 1px solid #333; color: #aaa;
+            background: #161616; border: 1px solid #333; color: #aaa;
             padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600;
             cursor: pointer; transition: all 0.3s ease; text-align: center;
         }
         .option-btn.active {
-            background: rgba(212, 175, 55, 0.1); border-color: #d4af37; color: #d4af37;
-            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            background: rgba(212, 175, 55, 0.12); border-color: #d4af37; color: #d4af37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.25);
         }
+        
         .text-input {
-            width: 100%; background: #1e1e1e; border: 1px solid #333;
+            width: 100%; background: #161616; border: 1px solid #333;
             border-radius: 10px; padding: 12px 15px; color: #fff; font-size: 14px; outline: none;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
-        .text-input:focus { border-color: #d4af37; }
+        .text-input:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+            background: #1a1a1a;
+        }
+
+        /* تحسين مظهر القائمة المنسدلة للسيارات */
+        datalist {
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+
         .submit-btn {
-            width: 100%; background: #d4af37; color: #0b0b0b; border: none;
-            border-radius: 12px; padding: 14px; font-size: 16px; font-weight: 700;
-            cursor: pointer; margin-top: 10px; transition: background 0.3s, transform 0.1s;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            width: 100%; background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
+            color: #0b0b0b; border: none; border-radius: 12px; padding: 15px; font-size: 16px; font-weight: 800;
+            cursor: pointer; margin-top: 12px; transition: transform 0.2s, opacity 0.3s;
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
         }
-        .submit-btn:hover { background: #e5c158; }
+        .submit-btn:hover { opacity: 0.95; transform: translateY(-2px); }
+        .submit-btn:active { transform: translateY(0); }
+
         .security-note {
-            text-align: center; font-size: 12px; color: #777; margin-top: 15px;
+            text-align: center; font-size: 12px; color: #888; margin-top: 15px;
             display: flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; }
+        .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 8px #2ecc71; }
         
         /* Success Screen */
         .success-screen { display: none; text-align: center; padding: 20px 10px; }
         .success-icon-box {
-            width: 70px; height: 70px; background: rgba(46, 204, 113, 0.1);
+            width: 70px; height: 70px; background: rgba(46, 204, 113, 0.12);
             border: 2px solid #2ecc71; border-radius: 50%;
             display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
         }
         .success-icon-box svg { width: 35px; height: 35px; fill: #2ecc71; }
         .success-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
         
-        /* Order Number Box with Copy Button */
         .order-number-card {
-            background: #1a1a1a;
+            background: #161616;
             border: 1px dashed #d4af37;
             border-radius: 12px;
             padding: 15px;
@@ -96,9 +116,9 @@
             gap: 10px;
         }
         .order-number-text {
-            font-size: 16px;
+            font-size: 17px;
             color: #d4af37;
-            font-weight: 700;
+            font-weight: 900;
             direction: ltr;
             text-align: right;
         }
@@ -114,26 +134,27 @@
             transition: background 0.3s;
             white-space: nowrap;
         }
-        .copy-code-btn:hover {
-            background: #e5c158;
-        }
+        .copy-code-btn:hover { background: #e5c158; }
+        
         .instruction-note {
             font-size: 13px;
-            color: #aaa;
+            color: #ccc;
             line-height: 1.6;
             margin-bottom: 20px;
-            background: rgba(212, 175, 55, 0.05);
-            padding: 10px;
+            background: rgba(212, 175, 55, 0.08);
+            padding: 12px;
             border-radius: 8px;
-            border-right: 2px solid #d4af37;
+            border-right: 3px solid #d4af37;
+            text-align: right;
         }
 
         .success-btn {
             background: transparent; border: 1px solid #d4af37; color: #d4af37;
-            width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer;
+            width: 100%; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s;
         }
-        .success-btn:hover { background: rgba(212, 175, 55, 0.1); }
-        .footer-credit { margin-top: 15px; font-size: 11px; color: #555; text-align: center; }
+        .success-btn:hover { background: rgba(212, 175, 55, 0.12); }
+        .footer-credit { margin-top: 18px; font-size: 11px; color: #666; text-align: center; }
     </style>
 </head>
 <body>
@@ -183,12 +204,81 @@
                 <input type="text" id="city" class="text-input" placeholder="الدمام" required>
             </div>
 
+            <!-- خانة السيارة المطلوبة مع قائمة منسدلة ذكية لجميع سيارات العالم وكتابة حرة -->
             <div class="form-group">
                 <label class="form-label">السيارة المطلوبة *</label>
-                <input type="text" id="carModel" class="text-input" placeholder="مثال: تويوتا كامري / BMW" required>
+                <input type="text" id="carModel" class="text-input" list="carList" placeholder="اختر أو اكتب اسم الموديل والفئة..." required>
+                <datalist id="carList">
+                    <!-- تويوتا -->
+                    <option value="تويوتا - كامري (Toyota Camry)">
+                    <option value="تويوتا - لاندكروزر (Toyota Land Cruiser)">
+                    <option value="تويوتا - كورولا (Toyota Corolla)">
+                    <option value="تويوتا - راف فور (Toyota RAV4)">
+                    <option value="تويوتا - هيلوكس (Toyota Hilux)">
+                    <option value="تويوتا - فورتشنر (Toyota Fortuner)">
+                    <option value="تويوتا - افالون (Toyota Avalon)">
+                    <option value="تويوتا - يارس (Toyota Yaris)">
+                    <option value="تويوتا - برادو (Toyota Prado)">
+                    <!-- لكسز -->
+                    <option value="لكزس - LX 600">
+                    <option value="لكزس - ES 350">
+                    <option value="لكزس - RX 350">
+                    <option value="لكزس - NX 350">
+                    <option value="لكزس - LS 500">
+                    <!-- هيونداي -->
+                    <option value="هيونداي - النترا (Hyundai Elantra)">
+                    <option value="هيونداي - سوناتا (Hyundai Sonata)">
+                    <option value="هيونداي - توسان (Hyundai Tucson)">
+                    <option value="هيونداي - سانتا في (Hyundai Santa Fe)">
+                    <option value="هيونداي - أكسنت (Hyundai Accent)">
+                    <!-- كيا -->
+                    <option value="كيا - كادينزا / كيه 8 (Kia K8)">
+                    <option value="كيا - سبورتاج (Kia Sportage)">
+                    <option value="كيا - سورينتو (Kia Sorento)">
+                    <option value="كيا - تيلورايد (Kia Telluride)">
+                    <option value="كيا - سيراتو (Kia Cerato)">
+                    <!-- بي إم دبليو -->
+                    <option value="بي إم دبليو - الفئة السابعة (BMW 7 Series)">
+                    <option value="بي إم دبليو - الفئة الخامسة (BMW 5 Series)">
+                    <option value="بي إم دبليو - الفئة الثالثة (BMW 3 Series)">
+                    <option value="بي إم دبليو - X5">
+                    <option value="بي إم دبليو - X7">
+                    <!-- مرسيدس -->
+                    <option value="مرسيدس - الفئة S (Mercedes S-Class)">
+                    <option value="مرسيدس - الفئة E (Mercedes E-Class)">
+                    <option value="مرسيدس - الفئة C (Mercedes C-Class)">
+                    <option value="مرسيدس - G 63 (G-Wagon)">
+                    <option value="مرسيدس - GLC / GLE">
+                    <!-- نيسان -->
+                    <option value="نيسان - باترول (Nissan Patrol)">
+                    <option value="نيسان - التيما (Nissan Altima)">
+                    <option value="نيسان - صني (Nissan Sunny)">
+                    <option value="نيسان - اكس تريل (Nissan X-Trail)">
+                    <!-- فورد -->
+                    <option value="فورد - تورس (Ford Taurus)">
+                    <option value="فورد - إكسبدشن (Ford Expedition)">
+                    <option value="فورد - إدج (Ford Edge)">
+                    <option value="فورد - رنجر (Ford Ranger)">
+                    <!-- شيفروليه -->
+                    <option value="شيفروليه - تاهو (Chevrolet Tahoe)">
+                    <option value="شيفروليه - سيلفرادو (Chevrolet Silverado)">
+                    <option value="شيفروليه - كابتيفا (Chevrolet Captiva)">
+                    <!-- جي إم سي -->
+                    <option value="جي إم سي - يوكون (GMC Yukon Denali)">
+                    <option value="جي إم سي - سييرا (GMC Sierra)">
+                    <!-- فخمة ورياضية أخرى -->
+                    <option value="بورش - كايين (Porsche Cayenne)">
+                    <option value="بورش - باناميرا (Porsche Panamera)">
+                    <option value="رنج روفر - فوغ (Range Rover Vogue)">
+                    <option value="رنج روفر - فيلار (Range Rover Velar)">
+                    <option value="شانجان - CS95 / CS85">
+                    <option value="جريت وول - تانك 300 / 500 (Tank 500)">
+                    <option value="جيلي - مونجارو (Geely Monjaro)">
+                    <option value="شانجان - ايدو بلس">
+                </datalist>
             </div>
 
-            <button type="submit" class="submit-btn" id="submitBtn">أرسل طلبك &gt;</button>
+            <button type="submit" class="submit-btn" id="submitBtn">أرسل طلبك الآن &gt;</button>
 
             <div class="security-note">
                 <div class="security-dot"></div>
@@ -276,13 +366,13 @@
                     document.getElementById('formContainer').style.display = 'none';
                     document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
                     document.getElementById('successScreen').style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerText = 'أرسل طلبك >';
+                    btn.disabled, btn.disabled = false;
+                    btn.innerText = 'أرسل طلبك الآن >';
                 })
                 .catch((error) => {
                     alert("حدث خطأ أثناء إرسال الطلب.");
                     btn.disabled = false;
-                    btn.innerText = 'أرسل طلبك >';
+                    btn.innerText = 'أرسل طلبك الآن >';
                 });
         }
 
