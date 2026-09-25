@@ -44,24 +44,24 @@
             padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between;
             align-items: center; flex-wrap: wrap; gap: 15px;
         }
-        .stats-group { display: flex; gap: 15px; flex-wrap: wrap; }
+        .stats-group { display: flex; gap: 12px; flex-wrap: wrap; }
         .stat-badge {
-            background: #1c1c1c; border: 1px solid #333; padding: 6px 14px;
-            border-radius: 8px; font-size: 13px; color: #aaa;
+            background: #1c1c1c; border: 1px solid #333; padding: 6px 12px;
+            border-radius: 8px; font-size: 12px; color: #aaa;
         }
         .stat-badge span { color: #d4af37; font-weight: 700; }
         
-        .search-box { flex: 1; min-width: 260px; }
+        .search-box { flex: 1; min-width: 240px; }
         .search-input {
             width: 100%; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
             padding: 10px 15px; color: #fff; font-size: 14px; outline: none;
         }
         .search-input:focus { border-color: #d4af37; }
 
-        .nav-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
+        .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
         .tab-btn {
             background: #1c1c1c; border: 1px solid #333; color: #aaa;
-            padding: 9px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 12px;
             transition: all 0.3s;
         }
         .tab-btn.active, .tab-btn:hover { background: #d4af37; color: #0b0b0b; border-color: #d4af37; }
@@ -80,6 +80,7 @@
         }
         .order-card.archived { border-right-color: #3498db; }
         .order-card.contacted { border-right-color: #2ecc71; }
+        .order-card.saved-internal { border-right-color: #f1c40f; }
         
         .order-id { font-size: 13px; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #222; color: #d4af37; font-weight: 700; }
@@ -98,7 +99,8 @@
         
         .whatsapp-client-btn { background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; }
         .whatsapp-forward-btn { background: rgba(39, 174, 96, 0.15); border: 1px solid #27ae60; color: #27ae60; }
-        .save-file-btn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #f1c40f; }
+        .save-internal-btn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #f1c40f; }
+        .save-file-btn { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; }
         .contact-btn { background: rgba(155, 89, 182, 0.15); border: 1px solid #9b59b6; color: #9b59b6; }
         .archive-btn { background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; color: #3498db; }
         .delete-btn { background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; }
@@ -130,6 +132,7 @@
             <div class="stats-group">
                 <div class="stat-badge">الجديدة: <span id="statNew">0</span></div>
                 <div class="stat-badge">تم التواصل: <span id="statContacted">0</span></div>
+                <div class="stat-badge">المحفوظات: <span id="statSaved">0</span></div>
                 <div class="stat-badge">الأرشيف: <span id="statArchived">0</span></div>
             </div>
             
@@ -140,6 +143,7 @@
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="switchTab('all', this)">الطلبات الجديدة</button>
                 <button class="tab-btn" onclick="switchTab('contacted', this)">تم التواصل</button>
+                <button class="tab-btn" onclick="switchTab('saved', this)">المحفوظات</button>
                 <button class="tab-btn" onclick="switchTab('archived', this)">الأرشيف</button>
             </div>
         </div>
@@ -167,7 +171,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let currentFilter = 'all';
+        let currentFilter = 'all'; // all, contacted, saved, archived
         let allOrdersData = {};
 
         function checkPassword() {
@@ -199,14 +203,17 @@
         }
 
         function updateStats() {
-            let countNew = 0, countContacted = 0, countArchived = 0;
+            let countNew = 0, countContacted = 0, countSaved = 0, countArchived = 0;
             Object.values(allOrdersData).forEach(o => {
-                if (o.status === 'أرشيف') countArchived++;
-                else if (o.status === 'تم التواصل') countContacted++;
+                const st = o.status || 'جديد';
+                if (st === 'أرشيف') countArchived++;
+                else if (st === 'محفوظ') countSaved++;
+                else if (st === 'تم التواصل') countContacted++;
                 else countNew++;
             });
             document.getElementById('statNew').innerText = countNew;
             document.getElementById('statContacted').innerText = countContacted;
+            document.getElementById('statSaved').innerText = countSaved;
             document.getElementById('statArchived').innerText = countArchived;
         }
 
@@ -221,8 +228,9 @@
                 const status = order.status || 'جديد';
                 
                 let matchTab = true;
-                if (currentFilter === 'all') matchTab = status !== 'أرشيف';
+                if (currentFilter === 'all') matchTab = (status !== 'أرشيف' && status !== 'محفوظ');
                 if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
+                if (currentFilter === 'saved') matchTab = status === 'محفوظ';
                 if (currentFilter === 'archived') matchTab = status === 'أرشيف';
 
                 if (!matchTab) return false;
@@ -266,7 +274,7 @@
                 const waForwardLink = `https://wa.me/?text=${encodeURIComponent(forwardText)}`;
 
                 const card = document.createElement('div');
-                card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : '')}`;
+                card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : (status === 'محفوظ' ? 'saved-internal' : ''))}`;
                 card.innerHTML = `
                     <div>
                         <div class="order-id">
@@ -288,10 +296,11 @@
                             <a href="${waForwardLink}" target="_blank" class="btn-action whatsapp-forward-btn">تحويل لشخص آخر</a>
                         </div>
                         <div class="action-row">
-                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', \`${forwardText}\`)">حفظ كملف</button>
-                            <button class="btn-action contact-btn" onclick="updateStatus('${key}', 'تم التواصل')">تم التواصل</button>
+                            <button class="btn-action save-internal-btn" onclick="updateStatus('${key}', 'محفوظ')">حفظ باللوحة</button>
+                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', \`${forwardText}\`)">تحميل ملف .txt</button>
                         </div>
                         <div class="action-row">
+                            <button class="btn-action contact-btn" onclick="updateStatus('${key}', 'تم التواصل')">تم التواصل</button>
                             <button class="btn-action archive-btn" onclick="updateStatus('${key}', 'أرشيف')">أرشفة</button>
                             <button class="btn-action delete-btn" onclick="deleteOrder('${key}')">حذف</button>
                         </div>
