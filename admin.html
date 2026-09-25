@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أهل كار - لوحة تحكم الإدارة المتقدمة</title>
+    <title>أهل كار - لوحة تحكم الإدارة المتطورة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
@@ -13,13 +13,13 @@
         .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
         .login-box {
             width: 100%; max-width: 400px; background: #141414;
-            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px; padding: 30px;
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px; padding: 35px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center;
         }
-        .login-title { font-size: 20px; font-weight: 700; color: #d4af37; margin-bottom: 20px; }
+        .login-title { font-size: 22px; font-weight: 700; color: #d4af37; margin-bottom: 20px; }
         .login-input {
             width: 100%; background: #1e1e1e; border: 1px solid #333; border-radius: 10px;
-            padding: 12px 15px; color: #fff; font-size: 16px; text-align: center; letter-spacing: 5px;
+            padding: 12px 15px; color: #fff; font-size: 16px; text-align: center; letter-spacing: 8px;
             margin-bottom: 15px; outline: none;
         }
         .login-input:focus { border-color: #d4af37; }
@@ -33,12 +33,12 @@
         .dashboard { display: none; max-width: 1200px; margin: 0 auto; }
         .dashboard-header {
             background: #141414; border: 1px solid rgba(212, 175, 55, 0.3);
-            padding: 20px; border-radius: 15px; margin-bottom: 20px;
+            padding: 20px 25px; border-radius: 15px; margin-bottom: 20px;
             display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
         }
         .dashboard-title { font-size: 22px; font-weight: 900; color: #d4af37; }
         
-        /* Stats & Search Bar Area */
+        /* Controls & Search Bar Area */
         .controls-panel {
             background: #141414; border: 1px solid #262626; border-radius: 15px;
             padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between;
@@ -51,60 +51,59 @@
         }
         .stat-badge span { color: #d4af37; font-weight: 700; }
         
-        .search-box { flex: 1; min-width: 250px; }
+        .search-box { flex: 1; min-width: 260px; }
         .search-input {
-            width: 100%; background: #1c1c1c; border: 1px solid #333; border-radius: 8px;
-            padding: 8px 12px; color: #fff; font-size: 14px; outline: none;
+            width: 100%; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
+            padding: 10px 15px; color: #fff; font-size: 14px; outline: none;
         }
         .search-input:focus { border-color: #d4af37; }
 
         .nav-tabs { display: flex; gap: 10px; flex-wrap: wrap; }
         .tab-btn {
             background: #1c1c1c; border: 1px solid #333; color: #aaa;
-            padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+            padding: 9px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+            transition: all 0.3s;
         }
         .tab-btn.active, .tab-btn:hover { background: #d4af37; color: #0b0b0b; border-color: #d4af37; }
         
-        .action-header-btns { display: flex; gap: 10px; }
-        .export-btn {
-            background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71;
-            padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
-        }
         .logout-btn {
             background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c;
-            padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13px;
+            padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
         }
+        .logout-btn:hover { background: rgba(231, 76, 60, 0.25); }
 
         .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
         .order-card {
             background: #141414; border: 1px solid #262626; border-radius: 15px; padding: 20px;
-            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-right: 4px solid #d4af37;
+            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border-right: 4px solid #d4af37;
             display: flex; flex-direction: column; justify-content: space-between;
         }
         .order-card.archived { border-right-color: #3498db; }
         .order-card.contacted { border-right-color: #2ecc71; }
         
-        .order-id { font-size: 13px; color: #888; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .order-id { font-size: 13px; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #222; color: #d4af37; font-weight: 700; }
         
-        .order-detail { font-size: 14px; color: #ccc; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .order-detail { font-size: 14px; color: #bbb; margin-bottom: 7px; display: flex; justify-content: space-between; }
         .order-detail span { color: #fff; font-weight: 600; }
         
         .card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #222; }
         .action-row { display: flex; gap: 6px; }
         .btn-action {
-            flex: 1; padding: 7px; border-radius: 6px; font-size: 12px; font-weight: 600;
+            flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
             cursor: pointer; text-align: center; border: none; text-decoration: none; display: flex;
             align-items: center; justify-content: center; gap: 4px; transition: opacity 0.2s;
         }
         .btn-action:hover { opacity: 0.8; }
-        .whatsapp-btn { background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; }
-        .copy-btn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #f1c40f; }
+        
+        .whatsapp-client-btn { background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; }
+        .whatsapp-forward-btn { background: rgba(39, 174, 96, 0.15); border: 1px solid #27ae60; color: #27ae60; }
+        .save-file-btn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #f1c40f; }
         .contact-btn { background: rgba(155, 89, 182, 0.15); border: 1px solid #9b59b6; color: #9b59b6; }
         .archive-btn { background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; color: #3498db; }
         .delete-btn { background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; }
 
-        .no-orders { text-align: center; color: #666; grid-column: 1 / -1; padding: 40px; font-size: 16px; background: #141414; border-radius: 15px; }
+        .no-orders { text-align: center; color: #666; grid-column: 1 / -1; padding: 50px; font-size: 16px; background: #141414; border-radius: 15px; border: 1px solid #262626; }
     </style>
 </head>
 <body>
@@ -123,13 +122,10 @@
     <div class="dashboard" id="dashboardScreen">
         <div class="dashboard-header">
             <h1 class="dashboard-title">إدارة طلبات معرض أهل كار</h1>
-            <div class="action-header-btns">
-                <button class="export-btn" onclick="exportToCSV()">تصدير إكسل (CSV)</button>
-                <button class="logout-btn" onclick="logout()">خروج</button>
-            </div>
+            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
         </div>
 
-        <!-- Controls & Stats Panel -->
+        <!-- Controls & Search Bar Area -->
         <div class="controls-panel">
             <div class="stats-group">
                 <div class="stat-badge">الجديدة: <span id="statNew">0</span></div>
@@ -138,7 +134,7 @@
             </div>
             
             <div class="search-box">
-                <input type="text" id="searchInput" class="search-input" placeholder="بحث سريع (بالاسم، الجوال، السيارة)..." oninput="renderOrders()">
+                <input type="text" id="searchInput" class="search-input" placeholder="بحث سريع برقم الطلب، الاسم، الجوال، السيارة..." oninput="renderOrders()">
             </div>
 
             <div class="nav-tabs">
@@ -217,14 +213,13 @@
         function renderOrders() {
             const container = document.getElementById('ordersContainer');
             container.innerHTML = '';
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
 
             const keys = Object.keys(allOrdersData).reverse();
             let filteredKeys = keys.filter(key => {
                 const order = allOrdersData[key];
                 const status = order.status || 'جديد';
                 
-                // تصفية حسب التبويب
                 let matchTab = true;
                 if (currentFilter === 'all') matchTab = status !== 'أرشيف';
                 if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
@@ -232,8 +227,8 @@
 
                 if (!matchTab) return false;
 
-                // تصفية حسب البحث
-                const fullText = `${order.fullName} ${order.phone} ${order.carModel} ${order.city}`.toLowerCase();
+                const orderNumStr = String(order.orderNumber || key).toLowerCase();
+                const fullText = `${orderNumStr} ${order.fullName} ${order.phone} ${order.carModel} ${order.city}`.toLowerCase();
                 return fullText.includes(searchTerm);
             });
 
@@ -245,25 +240,40 @@
             filteredKeys.forEach(key => {
                 const order = allOrdersData[key];
                 const status = order.status || 'جديد';
+                const orderNum = order.orderNumber || key;
+                const orderDate = order.date || 'غير محدد';
                 
-                const messageText = `🚗 طلب جديد من معرض أهل كار:\n\n` +
-                    `📋 رقم الطلب: #${order.orderNumber || key}\n` +
+                // تنظيف رقم الهاتف لمراسلة العميل مباشرة
+                let cleanPhone = (order.phone || '').replace(/\D/g, '');
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '966' + cleanPhone.substring(1);
+                }
+
+                // رسالة للتواصل مع العميل مباشرة
+                const clientMsg = `مرحباً بك يا أستاذ/ة ${order.fullName}، بخصوص طلبك رقم (#${orderNum}) لسيارة ${order.carModel} في معرض أهل كار، نحن نسعد بخدمتك ونود تأكيد تفاصيل طلبك.`;
+                const waClientLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(clientMsg)}`;
+
+                // رسالة لتحويل تفاصيل الطلب لأي شخص آخر
+                const forwardText = `🚗 تفاصيل طلب من معرض أهل كار:\n\n` +
+                    `📋 رقم الطلب: #${orderNum}\n` +
                     `👤 اسم العميل: ${order.fullName}\n` +
                     `📱 الجوال: ${order.phone}\n` +
                     `📍 المدينة: ${order.city}\n` +
                     `🚘 السيارة: ${order.carModel}\n` +
                     `🔹 النوع: ${order.clientType}\n` +
                     `💳 الدفع: ${order.payMethod}\n` +
-                    `⏱️ الوقت: ${order.date}`;
+                    `⏱️ التاريخ والوقت: ${orderDate}`;
+                const waForwardLink = `https://wa.me/?text=${encodeURIComponent(forwardText)}`;
 
                 const card = document.createElement('div');
                 card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : '')}`;
                 card.innerHTML = `
                     <div>
                         <div class="order-id">
-                            <span>طلب #${order.orderNumber || key}</span>
+                            <span>طلب #${orderNum}</span>
                             <span class="status-badge">${status}</span>
                         </div>
+                        <div class="order-detail">التاريخ والوقت: <span>${orderDate}</span></div>
                         <div class="order-detail">نوع العميل: <span>${order.clientType}</span></div>
                         <div class="order-detail">طريقة الدفع: <span>${order.payMethod}</span></div>
                         <div class="order-detail">الاسم: <span>${order.fullName}</span></div>
@@ -274,8 +284,11 @@
 
                     <div class="card-actions">
                         <div class="action-row">
-                            <a href="https://wa.me/?text=${encodeURIComponent(messageText)}" target="_blank" class="btn-action whatsapp-btn">واتساب</a>
-                            <button class="btn-action copy-btn" onclick="copyOrderText(\`${messageText}\`)">نسخ النص</button>
+                            <a href="${waClientLink}" target="_blank" class="btn-action whatsapp-client-btn">واتساب العميل</a>
+                            <a href="${waForwardLink}" target="_blank" class="btn-action whatsapp-forward-btn">تحويل لشخص آخر</a>
+                        </div>
+                        <div class="action-row">
+                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', \`${forwardText}\`)">حفظ كملف</button>
                             <button class="btn-action contact-btn" onclick="updateStatus('${key}', 'تم التواصل')">تم التواصل</button>
                         </div>
                         <div class="action-row">
@@ -288,10 +301,14 @@
             });
         }
 
-        function copyOrderText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert('تم نسخ تفاصيل الطلب بنجاح!');
-            });
+        // حفظ تفاصيل الطلب الحالي في ملف نصي مستقل لوحده مع التاريخ والوقت
+        function saveSingleOrderFile(orderNum, textData) {
+            const blob = new Blob([textData], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AhlCar_Order_${orderNum}.txt`;
+            a.click();
         }
 
         function updateStatus(key, newStatus) {
@@ -302,19 +319,6 @@
             if (confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) {
                 database.ref('orders/' + key).remove();
             }
-        }
-
-        function exportToCSV() {
-            let csv = '\uFEFFرقم الطلب,الاسم,الجوال,المدينة,السيارة,نوع العميل,طريقة الدفع,الحالة,الوقت\n';
-            Object.values(allOrdersData).forEach(o => {
-                csv += `"${o.orderNumber || ''}","${o.fullName}","${o.phone}","${o.city}","${o.carModel}","${o.clientType}","${o.payMethod}","${o.status || 'جديد'}","${o.date}"\n`;
-            });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'AhlCar_Orders.csv';
-            a.click();
         }
     </script>
 </body>
