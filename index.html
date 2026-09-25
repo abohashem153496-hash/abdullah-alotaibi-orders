@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>معرض السيارات الفاخرة</title>
+    <title>أهل كار - معرض السيارات الفاخرة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <style>
         * {
@@ -53,9 +53,9 @@
             fill: #d4af37;
         }
         .title {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 700;
-            color: #ffffff;
+            color: #d4af37;
             letter-spacing: 0.5px;
         }
         .subtitle-box {
@@ -223,7 +223,7 @@
             <div class="icon-box">
                 <svg viewBox="0 0 24 24"><path d="M19 16.5C19 17.88 17.88 19 16.5 19C15.12 19 14 17.88 14 16.5C14 15.12 15.12 14 16.5 14C17.88 14 19 15.12 19 16.5M5 19C3.62 19 2.5 17.88 2.5 16.5C2.5 15.12 3.62 14 5 14C6.38 14 7.5 15.12 7.5 16.5C7.5 17.88 6.38 19 5 19M19.5 9.5H17V6H6.5V9.5H4.5C3.67 9.5 3 10.17 3 11V14.5H4.5C4.5 15.88 5.62 17 7 17C8.38 17 9.5 15.88 9.5 14.5H14.5C14.5 15.88 15.62 17 17 17C18.38 17 19.5 15.88 19.5 14.5H21V11C21 10.17 20.33 9.5 19.5 9.5M15 8.5H16.85L18.35 9.5H15V8.5Z"/></svg>
             </div>
-            <h1 class="title">معرض السيارات الفاخرة</h1>
+            <h1 class="title">أهل كار</h1>
         </div>
 
         <div class="subtitle-box">
@@ -283,11 +283,11 @@
             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
         </div>
         <h2 class="success-title">تم استلام طلبك بنجاح</h2>
-        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات قريباً بأفضل العروض المتاحة.</p>
+        <p class="success-desc">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً بأفضل العروض المتاحة.</p>
         <button class="success-btn" onclick="resetForm()">شكراً لاهتمامك بمعرضنا</button>
     </div>
 
-    <div class="footer-credit">© 2026 معرض السيارات الفاخرة - جميع الحقوق محفوظة</div>
+    <div class="footer-credit">© 2026 أهل كار - جميع الحقوق محفوظة</div>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -335,7 +335,8 @@
                 fullName: document.getElementById('fullName').value,
                 phone: document.getElementById('phoneNumber').value,
                 city: document.getElementById('city').value,
-                carModel: document.getElementById('carModel').value
+                carModel: document.getElementById('carModel').value,
+                status: 'جديد' // حفظ حالة الطلب لتسهيل الأرشفة والمتابعة
             };
 
             database.ref('orders/' + orderData.id).set(orderData)
