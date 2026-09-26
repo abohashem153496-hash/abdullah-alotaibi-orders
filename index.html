@@ -88,8 +88,8 @@
         }
         .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 8px #2ecc71; }
         
-        /* Success & Closed Screens */
-        .success-screen, .closed-screen { display: none; text-align: center; padding: 20px 10px; }
+        /* Success Screen */
+        .success-screen { display: none; text-align: center; padding: 20px 10px; }
         .success-icon-box {
             width: 70px; height: 70px; background: rgba(46, 204, 113, 0.12);
             border: 2px solid #2ecc71; border-radius: 50%;
@@ -97,16 +97,7 @@
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
         }
         .success-icon-box svg { width: 35px; height: 35px; fill: #2ecc71; }
-        
-        .closed-icon-box {
-            width: 70px; height: 70px; background: rgba(231, 76, 60, 0.12);
-            border: 2px solid #e74c3c; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;
-            box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
-        }
-        .closed-icon-box svg { width: 35px; height: 35px; fill: #e74c3c; }
-
-        .success-title, .closed-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+        .success-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
         
         .order-number-card {
             background: #161616; border: 1px dashed #d4af37; border-radius: 12px;
@@ -136,7 +127,6 @@
 </head>
 <body>
 
-    <!-- Form Container -->
     <div class="container" id="formContainer">
         <div class="header">
             <div class="icon-box">
@@ -225,23 +215,12 @@
         </form>
     </div>
 
-    <!-- Closed Screen (تظهر تلقائياً عندما تقوم بإيقاف الاستبيان من لوحة التحكم) -->
-    <div class="container closed-screen" id="closedScreen">
-        <div class="closed-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
-        </div>
-        <h2 class="closed-title">عذراً، استقبال الطلبات متوقف مؤقتاً</h2>
-        <p style="font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 20px;">
-            نقوم حالياً بتحديث نظام الطلبات في معرض أهل كار. يرجى العودة لاحقاً أو التواصل معنا مباشرة.
-        </p>
-    </div>
-
     <!-- Success Screen -->
     <div class="container success-screen" id="successScreen">
         <div class="success-icon-box">
             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
         </div>
-        <h2 class="success-title">تم استلام طلبك بنجاح</h2>
+        <h2 class="success-title" id="successTitle">تم استلام طلبك بنجاح</h2>
         
         <div class="order-number-card">
             <div>
@@ -251,11 +230,11 @@
             <button class="copy-code-btn" onclick="copyOrderNumber()">نسخ الرقم</button>
         </div>
 
-        <div class="instruction-note">
+        <div class="instruction-note" id="instructionNote">
             الرجاء الاحتفاظ برقم الطلب الخاص بحضرتك للمتابعة والاستفسار عن حالة طلبك في معرض أهل كار في أي وقت.
         </div>
 
-        <p class="success-desc" style="font-size: 13px; color: #888; margin-bottom: 20px;">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
+        <p class="success-desc" id="successDesc" style="font-size: 13px; color: #888; margin-bottom: 20px;">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
         <button class="success-btn" onclick="resetForm()">تقديم طلب جديد</button>
     </div>
 
@@ -282,26 +261,6 @@
         let formDataState = { clientType: 'أفراد', payMethod: 'كاش' };
         let currentOrderNum = '';
 
-        // الاستماع الفوري لحالة الاستبيان من قاعدة البيانات
-        database.ref('settings/formActive').on('value', (snapshot) => {
-            const isActive = snapshot.val() !== false; // الافتراضي مفعل
-            const formContainer = document.getElementById('formContainer');
-            const closedScreen = document.getElementById('closedScreen');
-            const successScreen = document.getElementById('successScreen');
-
-            if (isActive) {
-                closedScreen.style.display = 'none';
-                // إذا لم تكن شاشة النجاح ظاهرة، اعرض الفورم
-                if (successScreen.style.display !== 'block') {
-                    formContainer.style.display = 'block';
-                }
-            } else {
-                formContainer.style.display = 'none';
-                successScreen.style.display = 'none';
-                closedScreen.style.display = 'block';
-            }
-        });
-
         function selectOption(field, value, element) {
             formDataState[field] = value;
             element.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
@@ -314,36 +273,51 @@
             btn.disabled = true;
             btn.innerText = 'جاري الإرسال...';
             
-            const now = new Date();
-            currentOrderNum = String(Math.floor(1000 + Math.random() * 9000));
+            // التحقق من حالة الاستبيان لحظة الضغط على إرسال
+            database.ref('settings/formActive').once('value').then((snapshot) => {
+                const isActive = snapshot.val() !== false; // لو الحفظ true أو غير موجود يكون مفعل
+                const orderStatus = isActive ? 'جديد' : 'متوقف'; // لو متوقف يتسجل كـ "متوقف"
 
-            const orderData = {
-                id: Date.now(),
-                orderNumber: currentOrderNum,
-                date: now.toLocaleDateString('ar-SA') + ' - ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
-                clientType: formDataState.clientType,
-                payMethod: formDataState.payMethod,
-                fullName: document.getElementById('fullName').value,
-                phone: document.getElementById('phoneNumber').value,
-                city: document.getElementById('city').value,
-                carModel: document.getElementById('carModel').value,
-                status: 'جديد'
-            };
+                const now = new Date();
+                currentOrderNum = String(Math.floor(1000 + Math.random() * 9000));
 
-            database.ref('orders/' + orderData.id).set(orderData)
-                .then(() => {
-                    document.getElementById('formContainer').style.display = 'none';
-                    document.getElementById('closedScreen').style.display = 'none';
-                    document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
-                    document.getElementById('successScreen').style.display = 'block';
-                    btn.disabled = false;
-                    btn.innerText = 'أرسل طلبك الآن >';
-                })
-                .catch((error) => {
-                    alert("حدث خطأ أثناء إرسال الطلب.");
-                    btn.disabled = false;
-                    btn.innerText = 'أرسل طلبك الآن >';
-                });
+                const orderData = {
+                    id: Date.now(),
+                    orderNumber: currentOrderNum,
+                    date: now.toLocaleDateString('ar-SA') + ' - ' + now.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' }),
+                    clientType: formDataState.clientType,
+                    payMethod: formDataState.payMethod,
+                    fullName: document.getElementById('fullName').value,
+                    phone: document.getElementById('phoneNumber').value,
+                    city: document.getElementById('city').value,
+                    carModel: document.getElementById('carModel').value,
+                    status: orderStatus
+                };
+
+                database.ref('orders/' + orderData.id).set(orderData)
+                    .then(() => {
+                        document.getElementById('formContainer').style.display = 'none';
+                        document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
+                        
+                        // تعديل الرسالة حسب حالة الاستبيان
+                        if (!isActive) {
+                            document.getElementById('successTitle').innerText = 'تم حفظ طلبك (الاستبيان متوقف مؤقتاً)';
+                            document.getElementById('instructionNote').innerText = 'عذراً، استقبال الطلبات متوقف مؤقتاً في الوقت الحالي، ولكن تم حفظ طلبك بنجاح ورقم طلبك هو المرجع للمتابعة لاحقاً.';
+                        } else {
+                            document.getElementById('successTitle').innerText = 'تم استلام طلبك بنجاح';
+                            document.getElementById('instructionNote').innerText = 'الرجاء الاحتفاظ برقم الطلب الخاص بحضرتك للمتابعة والاستفسار عن حالة طلبك في معرض أهل كار في أي وقت.';
+                        }
+
+                        document.getElementById('successScreen').style.display = 'block';
+                        btn.disabled = false;
+                        btn.innerText = 'أرسل طلبك الآن >';
+                    })
+                    .catch((error) => {
+                        alert("حدث خطأ أثناء إرسال الطلب.");
+                        btn.disabled = false;
+                        btn.innerText = 'أرسل طلبك الآن >';
+                    });
+            });
         }
 
         function copyOrderNumber() {
