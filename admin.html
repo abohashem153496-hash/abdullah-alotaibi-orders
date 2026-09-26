@@ -38,6 +38,16 @@
         }
         .dashboard-title { font-size: 22px; font-weight: 900; color: #d4af37; }
         
+        .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        /* زر التحكم بالاستبيان (تشغيل / إيقاف) */
+        .toggle-status-btn {
+            padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
+            cursor: pointer; border: 1px solid; transition: all 0.3s;
+        }
+        .status-active { background: rgba(46, 204, 113, 0.15); border-color: #2ecc71; color: #2ecc71; }
+        .status-inactive { background: rgba(231, 76, 60, 0.15); border-color: #e74c3c; color: #e74c3c; }
+
         /* Controls & Search Bar Area */
         .controls-panel {
             background: #141414; border: 1px solid #262626; border-radius: 15px;
@@ -124,7 +134,11 @@
     <div class="dashboard" id="dashboardScreen">
         <div class="dashboard-header">
             <h1 class="dashboard-title">إدارة طلبات معرض أهل كار</h1>
-            <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+            <div class="header-actions">
+                <!-- زر التحكم بحالة الاستبيان (تشغيل / إيقاف) -->
+                <button id="toggleFormBtn" class="toggle-status-btn status-active" onclick="toggleFormStatus()">🟢 الاستبيان مفعل (إيقاف)</button>
+                <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+            </div>
         </div>
 
         <!-- Controls & Search Bar Area -->
@@ -173,14 +187,16 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let currentFilter = 'new_only'; // new_only, contacted, saved, archived, all
+        let currentFilter = 'new_only';
         let allOrdersData = {};
+        let isFormActive = true;
 
         function checkPassword() {
             if (document.getElementById('passcode').value === '1234') {
                 document.getElementById('loginScreen').style.display = 'none';
                 document.getElementById('dashboardScreen').style.display = 'block';
                 loadOrders();
+                loadFormStatus();
             } else {
                 document.getElementById('errorMsg').style.display = 'block';
             }
@@ -201,6 +217,33 @@
                 allOrdersData = snapshot.val() || {};
                 updateStats();
                 renderOrders();
+            });
+        }
+
+        // جلب حالة الاستبيان من قاعدة البيانات ومزامنتها
+        function loadFormStatus() {
+            database.ref('settings/formActive').on('value', (snapshot) => {
+                isFormActive = snapshot.val() !== false; // الافتراضي مفعل
+                const btn = document.getElementById('toggleFormBtn');
+                if (isFormActive) {
+                    btn.className = 'toggle-status-btn status-active';
+                    btn.innerText = '🟢 الاستبيان مفعل (إيقاف)';
+                } else {
+                    btn.className = 'toggle-status-btn status-inactive';
+                    btn.innerText = '🔴 الاستبيان متوقف (تفعيل)';
+                }
+            });
+        }
+
+        // تبديل حالة الاستبيان (تشغيل / إيقاف)
+        function toggleFormStatus() {
+            const newState = !isFormActive;
+            database.ref('settings/formActive').set(newState, (error) => {
+                if (!error) {
+                    alert(newState ? 'تم تفعيل الاستبيان بنجاح، يمكن للعملاء إرسال الطلبات الآن.' : 'تم إيقاف الاستبيان بنجاح، لن يتم استقبال أي طلبات جديدة.');
+                } else {
+                    alert('حدث خطأ أثناء تغيير حالة الاستبيان.');
+                }
             });
         }
 
@@ -312,7 +355,6 @@
             });
         }
 
-        // حفظ تفاصيل الطلب كإيصال رسمي مطبوع ومنسق بإطارات وجداول دقيقة
         function saveSingleOrderFile(orderNum, orderData) {
             const receiptContent = `
 ==================================================
