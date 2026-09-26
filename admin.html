@@ -40,7 +40,6 @@
         
         .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
-        /* زر التحكم بالاستبيان (تشغيل / إيقاف) */
         .toggle-status-btn {
             padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
             cursor: pointer; border: 1px solid; transition: all 0.3s;
@@ -48,7 +47,6 @@
         .status-active { background: rgba(46, 204, 113, 0.15); border-color: #2ecc71; color: #2ecc71; }
         .status-inactive { background: rgba(231, 76, 60, 0.15); border-color: #e74c3c; color: #e74c3c; }
 
-        /* Controls & Search Bar Area */
         .controls-panel {
             background: #141414; border: 1px solid #262626; border-radius: 15px;
             padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between;
@@ -91,6 +89,7 @@
         .order-card.archived { border-right-color: #3498db; }
         .order-card.contacted { border-right-color: #2ecc71; }
         .order-card.saved-internal { border-right-color: #f1c40f; }
+        .order-card.paused-order { border-right-color: #e74c3c; }
         
         .order-id { font-size: 13px; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #222; color: #d4af37; font-weight: 700; }
@@ -135,8 +134,7 @@
         <div class="dashboard-header">
             <h1 class="dashboard-title">إدارة طلبات معرض أهل كار</h1>
             <div class="header-actions">
-                <!-- زر التحكم بحالة الاستبيان (تشغيل / إيقاف) -->
-                <button id="toggleFormBtn" class="toggle-status-btn status-active" onclick="toggleFormStatus()">🟢 الاستبيان مفعل (إيقاف)</button>
+                <button id="toggleFormBtn" class="toggle-status-btn status-active" onclick="toggleFormStatus()">جاري تحميل الحالة...</button>
                 <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
             </div>
         </div>
@@ -146,6 +144,7 @@
             <div class="stats-group">
                 <div class="stat-badge">الكل: <span id="statTotal">0</span></div>
                 <div class="stat-badge">الجديدة: <span id="statNew">0</span></div>
+                <div class="stat-badge">متوقفة (قائمة الانتظار): <span id="statPaused">0</span></div>
                 <div class="stat-badge">تم التواصل: <span id="statContacted">0</span></div>
                 <div class="stat-badge">المحفوظات: <span id="statSaved">0</span></div>
                 <div class="stat-badge">الأرشيف: <span id="statArchived">0</span></div>
@@ -157,6 +156,7 @@
 
             <div class="nav-tabs">
                 <button class="tab-btn active" onclick="switchTab('new_only', this)">الطلبات الجديدة</button>
+                <button class="tab-btn" onclick="switchTab('paused', this)" style="border-color: #e74c3c; color: #e74c3c;">الطلبات المتوقفة</button>
                 <button class="tab-btn" onclick="switchTab('contacted', this)">تم التواصل</button>
                 <button class="tab-btn" onclick="switchTab('saved', this)">المحفوظات</button>
                 <button class="tab-btn" onclick="switchTab('archived', this)">الأرشيف</button>
@@ -220,45 +220,53 @@
             });
         }
 
-        // جلب حالة الاستبيان من قاعدة البيانات ومزامنتها
         function loadFormStatus() {
             database.ref('settings/formActive').on('value', (snapshot) => {
-                isFormActive = snapshot.val() !== false; // الافتراضي مفعل
-                const btn = document.getElementById('toggleFormBtn');
-                if (isFormActive) {
-                    btn.className = 'toggle-status-btn status-active';
-                    btn.innerText = '🟢 الاستبيان مفعل (إيقاف)';
+                const val = snapshot.val();
+                if (val === null) {
+                    database.ref('settings/formActive').set(true);
+                    isFormActive = true;
                 } else {
-                    btn.className = 'toggle-status-btn status-inactive';
-                    btn.innerText = '🔴 الاستبيان متوقف (تفعيل)';
+                    isFormActive = val;
                 }
+                updateToggleButtonUI();
             });
         }
 
-        // تبديل حالة الاستبيان (تشغيل / إيقاف)
+        function updateToggleButtonUI() {
+            const btn = document.getElementById('toggleFormBtn');
+            if (isFormActive) {
+                btn.className = 'toggle-status-btn status-active';
+                btn.innerText = '🟢 الاستبيان مفعل (اضغط للإيقاف)';
+            } else {
+                btn.className = 'toggle-status-btn status-inactive';
+                btn.innerText = '🔴 الاستبيان متوقف (اضغط للتفعيل)';
+            }
+        }
+
         function toggleFormStatus() {
             const newState = !isFormActive;
-            database.ref('settings/formActive').set(newState, (error) => {
-                if (!error) {
-                    alert(newState ? 'تم تفعيل الاستبيان بنجاح، يمكن للعملاء إرسال الطلبات الآن.' : 'تم إيقاف الاستبيان بنجاح، لن يتم استقبال أي طلبات جديدة.');
-                } else {
-                    alert('حدث خطأ أثناء تغيير حالة الاستبيان.');
-                }
+            database.ref('settings/formActive').set(newState).then(() => {
+                isFormActive = newState;
+                updateToggleButtonUI();
+                alert(newState ? 'تم تفعيل الاستبيان واستقبال الطلبات العادية.' : 'تم إيقاف الاستبيان: سيتم استقبال الطلبات كـ "طلبات متوقفة / قائمة انتظار".');
             });
         }
 
         function updateStats() {
-            let total = 0, countNew = 0, countContacted = 0, countSaved = 0, countArchived = 0;
+            let total = 0, countNew = 0, countPaused = 0, countContacted = 0, countSaved = 0, countArchived = 0;
             Object.values(allOrdersData).forEach(o => {
                 total++;
                 const st = o.status || 'جديد';
                 if (st === 'أرشيف') countArchived++;
                 else if (st === 'محفوظ') countSaved++;
                 else if (st === 'تم التواصل') countContacted++;
+                else if (st === 'متوقف') countPaused++;
                 else countNew++;
             });
             document.getElementById('statTotal').innerText = total;
             document.getElementById('statNew').innerText = countNew;
+            document.getElementById('statPaused').innerText = countPaused;
             document.getElementById('statContacted').innerText = countContacted;
             document.getElementById('statSaved').innerText = countSaved;
             document.getElementById('statArchived').innerText = countArchived;
@@ -275,7 +283,8 @@
                 const status = order.status || 'جديد';
                 
                 let matchTab = true;
-                if (currentFilter === 'new_only') matchTab = (status !== 'أرشيف' && status !== 'محفوظ' && status !== 'تم التواصل');
+                if (currentFilter === 'new_only') matchTab = (status !== 'أرشيف' && status !== 'محفوظ' && status !== 'تم التواصل' && status !== 'متوقف');
+                if (currentFilter === 'paused') matchTab = status === 'متوقف';
                 if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
                 if (currentFilter === 'saved') matchTab = status === 'محفوظ';
                 if (currentFilter === 'archived') matchTab = status === 'أرشيف';
@@ -319,7 +328,7 @@
                 const waForwardLink = `https://wa.me/?text=${encodeURIComponent(forwardText)}`;
 
                 const card = document.createElement('div');
-                card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : (status === 'محفوظ' ? 'saved-internal' : ''))}`;
+                card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : (status === 'محفوظ' ? 'saved-internal' : (status === 'متوقف' ? 'paused-order' : '')))}`;
                 card.innerHTML = `
                     <div>
                         <div class="order-id">
