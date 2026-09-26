@@ -236,7 +236,7 @@
                 if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
                 if (currentFilter === 'saved') matchTab = status === 'محفوظ';
                 if (currentFilter === 'archived') matchTab = status === 'أرشيف';
-                if (currentFilter === 'all') matchTab = true; // يعرض كل الطلبات بلا استثناء
+                if (currentFilter === 'all') matchTab = true;
 
                 if (!matchTab) return false;
 
@@ -299,7 +299,7 @@
                         </div>
                         <div class="action-row">
                             <button class="btn-action save-internal-btn" onclick="updateStatus('${key}', 'محفوظ')">حفظ باللوحة</button>
-                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', \`${forwardText}\`)">تحميل ملف .txt</button>
+                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', {date: '${orderDate}', fullName: '${order.fullName}', phone: '${order.phone}', city: '${order.city}', carModel: '${order.carModel}', clientType: '${order.clientType}', payMethod: '${order.payMethod}', status: '${status}'})">تحميل كإيصال مطبوع</button>
                         </div>
                         <div class="action-row">
                             <button class="btn-action contact-btn" onclick="updateStatus('${key}', 'تم التواصل')">تم التواصل</button>
@@ -312,12 +312,38 @@
             });
         }
 
-        function saveSingleOrderFile(orderNum, textData) {
-            const blob = new Blob([textData], { type: 'text/plain;charset=utf-8;' });
+        // حفظ تفاصيل الطلب كإيصال رسمي مطبوع ومنسق بإطارات وجداول دقيقة
+        function saveSingleOrderFile(orderNum, orderData) {
+            const receiptContent = `
+==================================================
+              معرض أهل كار للسيارات الفاخرة
+         [ إيصال / وثيقة تسجيل طلب عميل رسمي ]
+==================================================
+
+  [#] رقم الطلب الرسمي   : #${orderNum}
+  [📅] تاريخ ووقت الطلب : ${orderData.date}
+  --------------------------------------------------
+  [👤] اسم العميل الرباعي : ${orderData.fullName}
+  [📱] رقم جوال التواصل   : ${orderData.phone}
+  [📍] مدينة الإقامة      : ${orderData.city}
+  --------------------------------------------------
+  [🚘] السيارة المطلوبة   : ${orderData.carModel}
+  [🔹] نوع العميل        : ${orderData.clientType}
+  [💳] طريقة الدفع       : ${orderData.payMethod}
+  --------------------------------------------------
+  حالة الطلب الحالية في النظام : [ ${orderData.status} ]
+
+==================================================
+  ملاحظة: هذه الوثيقة صادرة إلكترونياً من نظام إدارة
+  الطلبات الخاص بمعرض أهل كار، وهي معتمدة للمتابعة.
+==================================================
+`;
+
+            const blob = new Blob([receiptContent], { type: 'text/plain;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `AhlCar_Order_${orderNum}.txt`;
+            a.download = `AhlCar_Receipt_${orderNum}.txt`;
             a.click();
         }
 
