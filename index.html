@@ -90,6 +90,8 @@
         
         /* Success Screen */
         .success-screen { display: none; text-align: center; padding: 20px 10px; }
+        
+        /* أيقونة النجاح الخضراء */
         .success-icon-box {
             width: 70px; height: 70px; background: rgba(46, 204, 113, 0.12);
             border: 2px solid #2ecc71; border-radius: 50%;
@@ -97,6 +99,16 @@
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
         }
         .success-icon-box svg { width: 35px; height: 35px; fill: #2ecc71; }
+
+        /* أيقونة التنبيه الحمراء في حالة التوقف */
+        .paused-icon-box {
+            width: 70px; height: 70px; background: rgba(231, 76, 60, 0.12);
+            border: 2px solid #e74c3c; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
+        }
+        .paused-icon-box svg { width: 35px; height: 35px; fill: #e74c3c; }
+
         .success-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
         
         .order-number-card {
@@ -215,11 +227,13 @@
         </form>
     </div>
 
-    <!-- Success Screen -->
+    <!-- Success / Paused Screen -->
     <div class="container success-screen" id="successScreen">
-        <div class="success-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+        <!-- أيقونة تتغير تلقائياً حسب الحالة (خضراء للنجاح أو حمراء للتوقف المؤقت) -->
+        <div id="iconBoxContainer" class="success-icon-box">
+            <svg id="statusSvg" viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
         </div>
+        
         <h2 class="success-title" id="successTitle">تم استلام طلبك بنجاح</h2>
         
         <div class="order-number-card">
@@ -234,7 +248,7 @@
             الرجاء الاحتفاظ برقم الطلب الخاص بحضرتك للمتابعة والاستفسار عن حالة طلبك في معرض أهل كار في أي وقت.
         </div>
 
-        <p class="success-desc" id="successDesc" style="font-size: 13px; color: #888; margin-bottom: 20px;">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
+        <p class="success-desc" style="font-size: 13px; color: #888; margin-bottom: 20px;">سيتواصل معك أحد مستشاري المبيعات في معرض أهل كار قريباً جداً.</p>
         <button class="success-btn" onclick="resetForm()">تقديم طلب جديد</button>
     </div>
 
@@ -273,10 +287,9 @@
             btn.disabled = true;
             btn.innerText = 'جاري الإرسال...';
             
-            // التحقق من حالة الاستبيان لحظة الضغط على إرسال
             database.ref('settings/formActive').once('value').then((snapshot) => {
-                const isActive = snapshot.val() !== false; // لو الحفظ true أو غير موجود يكون مفعل
-                const orderStatus = isActive ? 'جديد' : 'متوقف'; // لو متوقف يتسجل كـ "متوقف"
+                const isActive = snapshot.val() !== false;
+                const orderStatus = isActive ? 'جديد' : 'متوقف';
 
                 const now = new Date();
                 currentOrderNum = String(Math.floor(1000 + Math.random() * 9000));
@@ -299,11 +312,19 @@
                         document.getElementById('formContainer').style.display = 'none';
                         document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
                         
-                        // تعديل الرسالة حسب حالة الاستبيان
+                        const iconBox = document.getElementById('iconBoxContainer');
+                        const statusSvg = document.getElementById('statusSvg');
+
                         if (!isActive) {
+                            // في حالة التوقف: تحويل العلامة والاطار إلى اللون الأحمر الفاخر مع رسالة التنبيه
+                            iconBox.className = 'paused-icon-box';
+                            statusSvg.innerHTML = '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>'; // علامة تعجب/تنبيه
                             document.getElementById('successTitle').innerText = 'تم حفظ طلبك (الاستبيان متوقف مؤقتاً)';
                             document.getElementById('instructionNote').innerText = 'عذراً، استقبال الطلبات متوقف مؤقتاً في الوقت الحالي، ولكن تم حفظ طلبك بنجاح ورقم طلبك هو المرجع للمتابعة لاحقاً.';
                         } else {
+                            // في حالة التشغيل العادي: اللون الأخضر الطبيعي
+                            iconBox.className = 'success-icon-box';
+                            statusSvg.innerHTML = '<path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>'; // علامة صح
                             document.getElementById('successTitle').innerText = 'تم استلام طلبك بنجاح';
                             document.getElementById('instructionNote').innerText = 'الرجاء الاحتفاظ برقم الطلب الخاص بحضرتك للمتابعة والاستفسار عن حالة طلبك في معرض أهل كار في أي وقت.';
                         }
