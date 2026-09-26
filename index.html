@@ -72,11 +72,7 @@
             background: #1a1a1a;
         }
 
-        /* تحسين مظهر القائمة المنسدلة للسيارات */
-        datalist {
-            background-color: #1a1a1a;
-            color: #fff;
-        }
+        datalist { background-color: #1a1a1a; color: #fff; }
 
         .submit-btn {
             width: 100%; background: linear-gradient(135deg, #d4af37 0%, #aa8c2c 100%);
@@ -85,7 +81,6 @@
             box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
         }
         .submit-btn:hover { opacity: 0.95; transform: translateY(-2px); }
-        .submit-btn:active { transform: translateY(0); }
 
         .security-note {
             text-align: center; font-size: 12px; color: #888; margin-top: 15px;
@@ -93,8 +88,8 @@
         }
         .security-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; box-shadow: 0 0 8px #2ecc71; }
         
-        /* Success Screen */
-        .success-screen { display: none; text-align: center; padding: 20px 10px; }
+        /* Success & Closed Screens */
+        .success-screen, .closed-screen { display: none; text-align: center; padding: 20px 10px; }
         .success-icon-box {
             width: 70px; height: 70px; background: rgba(46, 204, 113, 0.12);
             border: 2px solid #2ecc71; border-radius: 50%;
@@ -102,50 +97,32 @@
             box-shadow: 0 0 15px rgba(46, 204, 113, 0.2);
         }
         .success-icon-box svg { width: 35px; height: 35px; fill: #2ecc71; }
-        .success-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
+        
+        .closed-icon-box {
+            width: 70px; height: 70px; background: rgba(231, 76, 60, 0.12);
+            border: 2px solid #e74c3c; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.2);
+        }
+        .closed-icon-box svg { width: 35px; height: 35px; fill: #e74c3c; }
+
+        .success-title, .closed-title { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 12px; }
         
         .order-number-card {
-            background: #161616;
-            border: 1px dashed #d4af37;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
+            background: #161616; border: 1px dashed #d4af37; border-radius: 12px;
+            padding: 15px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; gap: 10px;
         }
-        .order-number-text {
-            font-size: 17px;
-            color: #d4af37;
-            font-weight: 900;
-            direction: ltr;
-            text-align: right;
-        }
+        .order-number-text { font-size: 17px; color: #d4af37; font-weight: 900; direction: ltr; text-align: right; }
         .copy-code-btn {
-            background: #d4af37;
-            color: #0b0b0b;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.3s;
-            white-space: nowrap;
+            background: #d4af37; color: #0b0b0b; border: none; padding: 8px 14px;
+            border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.3s; white-space: nowrap;
         }
         .copy-code-btn:hover { background: #e5c158; }
         
         .instruction-note {
-            font-size: 13px;
-            color: #ccc;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            background: rgba(212, 175, 55, 0.08);
-            padding: 12px;
-            border-radius: 8px;
-            border-right: 3px solid #d4af37;
-            text-align: right;
+            font-size: 13px; color: #ccc; line-height: 1.6; margin-bottom: 20px;
+            background: rgba(212, 175, 55, 0.08); padding: 12px; border-radius: 8px;
+            border-right: 3px solid #d4af37; text-align: right;
         }
 
         .success-btn {
@@ -159,6 +136,7 @@
 </head>
 <body>
 
+    <!-- Form Container -->
     <div class="container" id="formContainer">
         <div class="header">
             <div class="icon-box">
@@ -204,77 +182,37 @@
                 <input type="text" id="city" class="text-input" placeholder="الدمام" required>
             </div>
 
-            <!-- خانة السيارة المطلوبة مع قائمة منسدلة ذكية لجميع سيارات العالم وكتابة حرة -->
             <div class="form-group">
                 <label class="form-label">السيارة المطلوبة *</label>
                 <input type="text" id="carModel" class="text-input" list="carList" placeholder="اختر أو اكتب اسم الموديل والفئة..." required>
                 <datalist id="carList">
-                    <!-- تويوتا -->
                     <option value="تويوتا - كامري (Toyota Camry)">
                     <option value="تويوتا - لاندكروزر (Toyota Land Cruiser)">
                     <option value="تويوتا - كورولا (Toyota Corolla)">
                     <option value="تويوتا - راف فور (Toyota RAV4)">
                     <option value="تويوتا - هيلوكس (Toyota Hilux)">
                     <option value="تويوتا - فورتشنر (Toyota Fortuner)">
-                    <option value="تويوتا - افالون (Toyota Avalon)">
-                    <option value="تويوتا - يارس (Toyota Yaris)">
                     <option value="تويوتا - برادو (Toyota Prado)">
-                    <!-- لكسز -->
                     <option value="لكزس - LX 600">
                     <option value="لكزس - ES 350">
                     <option value="لكزس - RX 350">
-                    <option value="لكزس - NX 350">
-                    <option value="لكزس - LS 500">
-                    <!-- هيونداي -->
                     <option value="هيونداي - النترا (Hyundai Elantra)">
                     <option value="هيونداي - سوناتا (Hyundai Sonata)">
                     <option value="هيونداي - توسان (Hyundai Tucson)">
-                    <option value="هيونداي - سانتا في (Hyundai Santa Fe)">
-                    <option value="هيونداي - أكسنت (Hyundai Accent)">
-                    <!-- كيا -->
-                    <option value="كيا - كادينزا / كيه 8 (Kia K8)">
                     <option value="كيا - سبورتاج (Kia Sportage)">
                     <option value="كيا - سورينتو (Kia Sorento)">
-                    <option value="كيا - تيلورايد (Kia Telluride)">
-                    <option value="كيا - سيراتو (Kia Cerato)">
-                    <!-- بي إم دبليو -->
                     <option value="بي إم دبليو - الفئة السابعة (BMW 7 Series)">
-                    <option value="بي إم دبليو - الفئة الخامسة (BMW 5 Series)">
-                    <option value="بي إم دبليو - الفئة الثالثة (BMW 3 Series)">
                     <option value="بي إم دبليو - X5">
-                    <option value="بي إم دبليو - X7">
-                    <!-- مرسيدس -->
                     <option value="مرسيدس - الفئة S (Mercedes S-Class)">
-                    <option value="مرسيدس - الفئة E (Mercedes E-Class)">
-                    <option value="مرسيدس - الفئة C (Mercedes C-Class)">
                     <option value="مرسيدس - G 63 (G-Wagon)">
-                    <option value="مرسيدس - GLC / GLE">
-                    <!-- نيسان -->
                     <option value="نيسان - باترول (Nissan Patrol)">
                     <option value="نيسان - التيما (Nissan Altima)">
-                    <option value="نيسان - صني (Nissan Sunny)">
-                    <option value="نيسان - اكس تريل (Nissan X-Trail)">
-                    <!-- فورد -->
                     <option value="فورد - تورس (Ford Taurus)">
                     <option value="فورد - إكسبدشن (Ford Expedition)">
-                    <option value="فورد - إدج (Ford Edge)">
-                    <option value="فورد - رنجر (Ford Ranger)">
-                    <!-- شيفروليه -->
                     <option value="شيفروليه - تاهو (Chevrolet Tahoe)">
-                    <option value="شيفروليه - سيلفرادو (Chevrolet Silverado)">
-                    <option value="شيفروليه - كابتيفا (Chevrolet Captiva)">
-                    <!-- جي إم سي -->
                     <option value="جي إم سي - يوكون (GMC Yukon Denali)">
-                    <option value="جي إم سي - سييرا (GMC Sierra)">
-                    <!-- فخمة ورياضية أخرى -->
                     <option value="بورش - كايين (Porsche Cayenne)">
-                    <option value="بورش - باناميرا (Porsche Panamera)">
                     <option value="رنج روفر - فوغ (Range Rover Vogue)">
-                    <option value="رنج روفر - فيلار (Range Rover Velar)">
-                    <option value="شانجان - CS95 / CS85">
-                    <option value="جريت وول - تانك 300 / 500 (Tank 500)">
-                    <option value="جيلي - مونجارو (Geely Monjaro)">
-                    <option value="شانجان - ايدو بلس">
                 </datalist>
             </div>
 
@@ -285,6 +223,17 @@
                 <span>آمن وموثوق • لن يتم مشاركة بياناتك</span>
             </div>
         </form>
+    </div>
+
+    <!-- Closed Screen (تظهر تلقائياً عندما تقوم بإيقاف الاستبيان من لوحة التحكم) -->
+    <div class="container closed-screen" id="closedScreen">
+        <div class="closed-icon-box">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+        </div>
+        <h2 class="closed-title">عذراً، استقبال الطلبات متوقف مؤقتاً</h2>
+        <p style="font-size: 14px; color: #aaa; line-height: 1.6; margin-bottom: 20px;">
+            نقوم حالياً بتحديث نظام الطلبات في معرض أهل كار. يرجى العودة لاحقاً أو التواصل معنا مباشرة.
+        </p>
     </div>
 
     <!-- Success Screen -->
@@ -333,6 +282,26 @@
         let formDataState = { clientType: 'أفراد', payMethod: 'كاش' };
         let currentOrderNum = '';
 
+        // الاستماع الفوري لحالة الاستبيان من قاعدة البيانات
+        database.ref('settings/formActive').on('value', (snapshot) => {
+            const isActive = snapshot.val() !== false; // الافتراضي مفعل
+            const formContainer = document.getElementById('formContainer');
+            const closedScreen = document.getElementById('closedScreen');
+            const successScreen = document.getElementById('successScreen');
+
+            if (isActive) {
+                closedScreen.style.display = 'none';
+                // إذا لم تكن شاشة النجاح ظاهرة، اعرض الفورم
+                if (successScreen.style.display !== 'block') {
+                    formContainer.style.display = 'block';
+                }
+            } else {
+                formContainer.style.display = 'none';
+                successScreen.style.display = 'none';
+                closedScreen.style.display = 'block';
+            }
+        });
+
         function selectOption(field, value, element) {
             formDataState[field] = value;
             element.parentElement.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
@@ -364,9 +333,10 @@
             database.ref('orders/' + orderData.id).set(orderData)
                 .then(() => {
                     document.getElementById('formContainer').style.display = 'none';
+                    document.getElementById('closedScreen').style.display = 'none';
                     document.getElementById('displayOrderNum').innerText = `#${currentOrderNum}`;
                     document.getElementById('successScreen').style.display = 'block';
-                    btn.disabled, btn.disabled = false;
+                    btn.disabled = false;
                     btn.innerText = 'أرسل طلبك الآن >';
                 })
                 .catch((error) => {
