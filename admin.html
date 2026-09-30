@@ -1,1 +1,412 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أهل كار - لوحة تحكم الإدارة المتطورة</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: #0b0b0b; color: #f1f1f1; min-height: 100vh; padding: 20px; }
+        
+        /* Login Screen */
+        .login-wrapper { display: flex; align-items: center; justify-content: center; min-height: 90vh; }
+        .login-box {
+            width: 100%; max-width: 400px; background: #141414;
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 20px; padding: 35px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center;
+        }
+        .login-title { font-size: 22px; font-weight: 700; color: #d4af37; margin-bottom: 20px; }
+        .login-input {
+            width: 100%; background: #1e1e1e; border: 1px solid #333; border-radius: 10px;
+            padding: 12px 15px; color: #fff; font-size: 16px; text-align: center; letter-spacing: 8px;
+            margin-bottom: 15px; outline: none;
+        }
+        .login-input:focus { border-color: #d4af37; }
+        .login-btn {
+            width: 100%; background: #d4af37; color: #0b0b0b; border: none;
+            border-radius: 10px; padding: 12px; font-size: 16px; font-weight: 700; cursor: pointer;
+        }
+        .error-msg { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; }
 
+        /* Dashboard */
+        .dashboard { display: none; max-width: 1200px; margin: 0 auto; }
+        .dashboard-header {
+            background: #141414; border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 20px 25px; border-radius: 15px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .dashboard-title { font-size: 22px; font-weight: 900; color: #d4af37; }
+        
+        .header-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        .toggle-status-btn {
+            padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 700;
+            cursor: pointer; border: 1px solid; transition: all 0.3s;
+        }
+        .status-active { background: rgba(46, 204, 113, 0.15); border-color: #2ecc71; color: #2ecc71; }
+        .status-inactive { background: rgba(231, 76, 60, 0.15); border-color: #e74c3c; color: #e74c3c; }
+
+        .controls-panel {
+            background: #141414; border: 1px solid #262626; border-radius: 15px;
+            padding: 15px 20px; margin-bottom: 25px; display: flex; justify-content: space-between;
+            align-items: center; flex-wrap: wrap; gap: 15px;
+        }
+        .stats-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .stat-badge {
+            background: #1c1c1c; border: 1px solid #333; padding: 6px 12px;
+            border-radius: 8px; font-size: 12px; color: #aaa;
+        }
+        .stat-badge span { color: #d4af37; font-weight: 700; }
+        
+        .search-box { flex: 1; min-width: 240px; }
+        .search-input {
+            width: 100%; background: #1c1c1c; border: 1px solid #333; border-radius: 10px;
+            padding: 10px 15px; color: #fff; font-size: 14px; outline: none;
+        }
+        .search-input:focus { border-color: #d4af37; }
+
+        .nav-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .tab-btn {
+            background: #1c1c1c; border: 1px solid #333; color: #aaa;
+            padding: 9px 14px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 12px;
+            transition: all 0.3s;
+        }
+        .tab-btn.active, .tab-btn:hover { background: #d4af37; color: #0b0b0b; border-color: #d4af37; }
+        
+        .logout-btn {
+            background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c;
+            padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 13px;
+        }
+        .logout-btn:hover { background: rgba(231, 76, 60, 0.25); }
+
+        .orders-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .order-card {
+            background: #141414; border: 1px solid #262626; border-radius: 15px; padding: 20px;
+            position: relative; box-shadow: 0 4px 15px rgba(0,0,0,0.6); border-right: 4px solid #d4af37;
+            display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .order-card.archived { border-right-color: #3498db; }
+        .order-card.contacted { border-right-color: #2ecc71; }
+        .order-card.saved-internal { border-right-color: #f1c40f; }
+        .order-card.paused-order { border-right-color: #e74c3c; }
+        
+        .order-id { font-size: 13px; color: #888; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 5px; background: #222; color: #d4af37; font-weight: 700; }
+        
+        .order-detail { font-size: 14px; color: #bbb; margin-bottom: 7px; display: flex; justify-content: space-between; }
+        .order-detail span { color: #fff; font-weight: 600; }
+        
+        .card-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 15px; padding-top: 12px; border-top: 1px solid #222; }
+        .action-row { display: flex; gap: 6px; }
+        .btn-action {
+            flex: 1; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            cursor: pointer; text-align: center; border: none; text-decoration: none; display: flex;
+            align-items: center; justify-content: center; gap: 4px; transition: opacity 0.2s;
+        }
+        .btn-action:hover { opacity: 0.8; }
+        
+        .whatsapp-client-btn { background: rgba(46, 204, 113, 0.15); border: 1px solid #2ecc71; color: #2ecc71; }
+        .whatsapp-forward-btn { background: rgba(39, 174, 96, 0.15); border: 1px solid #27ae60; color: #27ae60; }
+        .save-internal-btn { background: rgba(241, 196, 15, 0.15); border: 1px solid #f1c40f; color: #f1c40f; }
+        .save-file-btn { background: rgba(230, 126, 34, 0.15); border: 1px solid #e67e22; color: #e67e22; }
+        .contact-btn { background: rgba(155, 89, 182, 0.15); border: 1px solid #9b59b6; color: #9b59b6; }
+        .archive-btn { background: rgba(52, 152, 219, 0.15); border: 1px solid #3498db; color: #3498db; }
+        .delete-btn { background: rgba(231, 76, 60, 0.15); border: 1px solid #e74c3c; color: #e74c3c; }
+
+        .no-orders { text-align: center; color: #666; grid-column: 1 / -1; padding: 50px; font-size: 16px; background: #141414; border-radius: 15px; border: 1px solid #262626; }
+    </style>
+</head>
+<body>
+
+    <!-- Login Screen -->
+    <div class="login-wrapper" id="loginScreen">
+        <div class="login-box">
+            <h2 class="login-title">أهل كار - لوحة الإدارة</h2>
+            <input type="password" id="passcode" class="login-input" placeholder="••••" maxlength="4">
+            <button class="login-btn" onclick="checkPassword()">دخول</button>
+            <div class="error-msg" id="errorMsg">كلمة المرور غير صحيحة</div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div class="dashboard" id="dashboardScreen">
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">إدارة طلبات معرض أهل كار</h1>
+            <div class="header-actions">
+                <button id="toggleFormBtn" class="toggle-status-btn status-active" onclick="toggleFormStatus()">جاري تحميل الحالة...</button>
+                <button class="logout-btn" onclick="logout()">تسجيل الخروج</button>
+            </div>
+        </div>
+
+        <!-- Controls & Search Bar Area -->
+        <div class="controls-panel">
+            <div class="stats-group">
+                <div class="stat-badge">الكل: <span id="statTotal">0</span></div>
+                <div class="stat-badge">الجديدة: <span id="statNew">0</span></div>
+                <div class="stat-badge">متوقفة (قائمة الانتظار): <span id="statPaused">0</span></div>
+                <div class="stat-badge">تم التواصل: <span id="statContacted">0</span></div>
+                <div class="stat-badge">المحفوظات: <span id="statSaved">0</span></div>
+                <div class="stat-badge">الأرشيف: <span id="statArchived">0</span></div>
+            </div>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="بحث سريع برقم الطلب، الاسم، الجوال، السيارة..." oninput="renderOrders()">
+            </div>
+
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="switchTab('new_only', this)">الطلبات الجديدة</button>
+                <button class="tab-btn" onclick="switchTab('paused', this)" style="border-color: #e74c3c; color: #e74c3c;">الطلبات المتوقفة</button>
+                <button class="tab-btn" onclick="switchTab('contacted', this)">تم التواصل</button>
+                <button class="tab-btn" onclick="switchTab('saved', this)">المحفوظات</button>
+                <button class="tab-btn" onclick="switchTab('archived', this)">الأرشيف</button>
+                <button class="tab-btn" onclick="switchTab('all', this)" style="border-color: #d4af37; color: #d4af37;">جميع الطلبات</button>
+            </div>
+        </div>
+
+        <div class="orders-grid" id="ordersContainer">
+            <div class="no-orders">جاري تحميل الطلبات...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAIme1Li9x-ykLXMNKKnWD-Zwtsjr8Lio",
+            authDomain: "car-orders.firebaseapp.com",
+            databaseURL: "https://car-orders-default-rtdb.firebaseio.com",
+            projectId: "car-orders",
+            storageBucket: "car-orders.appspot.com",
+            messagingSenderId: "301308342917",
+            appId: "1:301308342917:web:df82c7a935891f60502fec"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let currentFilter = 'new_only';
+        let allOrdersData = {};
+        let isFormActive = true;
+
+        function checkPassword() {
+            if (document.getElementById('passcode').value === '1234') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('dashboardScreen').style.display = 'block';
+                loadOrders();
+                loadFormStatus();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        document.getElementById('passcode').addEventListener('keypress', (e) => { if (e.key === 'Enter') checkPassword(); });
+        function logout() { location.reload(); }
+
+        function switchTab(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderOrders();
+        }
+
+        function loadOrders() {
+            database.ref('orders').on('value', (snapshot) => {
+                allOrdersData = snapshot.val() || {};
+                updateStats();
+                renderOrders();
+            });
+        }
+
+        function loadFormStatus() {
+            database.ref('settings/formActive').on('value', (snapshot) => {
+                const val = snapshot.val();
+                if (val === null) {
+                    database.ref('settings/formActive').set(true);
+                    isFormActive = true;
+                } else {
+                    isFormActive = val;
+                }
+                updateToggleButtonUI();
+            });
+        }
+
+        function updateToggleButtonUI() {
+            const btn = document.getElementById('toggleFormBtn');
+            if (isFormActive) {
+                btn.className = 'toggle-status-btn status-active';
+                btn.innerText = '🟢 الاستبيان مفعل (اضغط للإيقاف)';
+            } else {
+                btn.className = 'toggle-status-btn status-inactive';
+                btn.innerText = '🔴 الاستبيان متوقف (اضغط للتفعيل)';
+            }
+        }
+
+        function toggleFormStatus() {
+            const newState = !isFormActive;
+            database.ref('settings/formActive').set(newState).then(() => {
+                isFormActive = newState;
+                updateToggleButtonUI();
+                alert(newState ? 'تم تفعيل الاستبيان واستقبال الطلبات العادية.' : 'تم إيقاف الاستبيان: سيتم استقبال الطلبات كـ "طلبات متوقفة / قائمة انتظار".');
+            });
+        }
+
+        function updateStats() {
+            let total = 0, countNew = 0, countPaused = 0, countContacted = 0, countSaved = 0, countArchived = 0;
+            Object.values(allOrdersData).forEach(o => {
+                total++;
+                const st = o.status || 'جديد';
+                if (st === 'أرشيف') countArchived++;
+                else if (st === 'محفوظ') countSaved++;
+                else if (st === 'تم التواصل') countContacted++;
+                else if (st === 'متوقف') countPaused++;
+                else countNew++;
+            });
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statNew').innerText = countNew;
+            document.getElementById('statPaused').innerText = countPaused;
+            document.getElementById('statContacted').innerText = countContacted;
+            document.getElementById('statSaved').innerText = countSaved;
+            document.getElementById('statArchived').innerText = countArchived;
+        }
+
+        function renderOrders() {
+            const container = document.getElementById('ordersContainer');
+            container.innerHTML = '';
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            const keys = Object.keys(allOrdersData).reverse();
+            let filteredKeys = keys.filter(key => {
+                const order = allOrdersData[key];
+                const status = order.status || 'جديد';
+                
+                let matchTab = true;
+                if (currentFilter === 'new_only') matchTab = (status !== 'أرشيف' && status !== 'محفوظ' && status !== 'تم التواصل' && status !== 'متوقف');
+                if (currentFilter === 'paused') matchTab = status === 'متوقف';
+                if (currentFilter === 'contacted') matchTab = status === 'تم التواصل';
+                if (currentFilter === 'saved') matchTab = status === 'محفوظ';
+                if (currentFilter === 'archived') matchTab = status === 'أرشيف';
+                if (currentFilter === 'all') matchTab = true;
+
+                if (!matchTab) return false;
+
+                const orderNumStr = String(order.orderNumber || key).toLowerCase();
+                const fullText = `${orderNumStr} ${order.fullName} ${order.phone} ${order.carModel} ${order.city}`.toLowerCase();
+                return fullText.includes(searchTerm);
+            });
+
+            if (filteredKeys.length === 0) {
+                container.innerHTML = '<div class="no-orders">لا توجد طلبات مطابقة للبحث أو القسم الحالي</div>';
+                return;
+            }
+
+            filteredKeys.forEach(key => {
+                const order = allOrdersData[key];
+                const status = order.status || 'جديد';
+                const orderNum = order.orderNumber || key;
+                const orderDate = order.date || 'غير محدد';
+                
+                let cleanPhone = (order.phone || '').replace(/\D/g, '');
+                if (cleanPhone.startsWith('0')) {
+                    cleanPhone = '966' + cleanPhone.substring(1);
+                }
+
+                const clientMsg = `مرحباً بك يا أستاذ/ة ${order.fullName}، بخصوص طلبك رقم (#${orderNum}) لسيارة ${order.carModel} في معرض أهل كار، نحن نسعد بخدمتك ونود تأكيد تفاصيل طلبك.`;
+                const waClientLink = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(clientMsg)}`;
+
+                const forwardText = `🚗 تفاصيل طلب من معرض أهل كار:\n\n` +
+                    `📋 رقم الطلب: #${orderNum}\n` +
+                    `👤 اسم العميل: ${order.fullName}\n` +
+                    `📱 الجوال: ${order.phone}\n` +
+                    `📍 المدينة: ${order.city}\n` +
+                    `🚘 السيارة: ${order.carModel}\n` +
+                    `🔹 النوع: ${order.clientType}\n` +
+                    `💳 الدفع: ${order.payMethod}\n` +
+                    `⏱️ التاريخ والوقت: ${orderDate}`;
+                const waForwardLink = `https://wa.me/?text=${encodeURIComponent(forwardText)}`;
+
+                const card = document.createElement('div');
+                card.className = `order-card ${status === 'أرشيف' ? 'archived' : (status === 'تم التواصل' ? 'contacted' : (status === 'محفوظ' ? 'saved-internal' : (status === 'متوقف' ? 'paused-order' : '')))}`;
+                card.innerHTML = `
+                    <div>
+                        <div class="order-id">
+                            <span>طلب #${orderNum}</span>
+                            <span class="status-badge">${status}</span>
+                        </div>
+                        <div class="order-detail">التاريخ والوقت: <span>${orderDate}</span></div>
+                        <div class="order-detail">نوع العميل: <span>${order.clientType}</span></div>
+                        <div class="order-detail">طريقة الدفع: <span>${order.payMethod}</span></div>
+                        <div class="order-detail">الاسم: <span>${order.fullName}</span></div>
+                        <div class="order-detail">الجوال: <span>${order.phone}</span></div>
+                        <div class="order-detail">المدينة: <span>${order.city}</span></div>
+                        <div class="order-detail">السيارة: <span>${order.carModel}</span></div>
+                    </div>
+
+                    <div class="card-actions">
+                        <div class="action-row">
+                            <a href="${waClientLink}" target="_blank" class="btn-action whatsapp-client-btn">واتساب العميل</a>
+                            <a href="${waForwardLink}" target="_blank" class="btn-action whatsapp-forward-btn">تحويل لشخص آخر</a>
+                        </div>
+                        <div class="action-row">
+                            <button class="btn-action save-internal-btn" onclick="updateStatus('${key}', 'محفوظ')">حفظ باللوحة</button>
+                            <button class="btn-action save-file-btn" onclick="saveSingleOrderFile('${orderNum}', {date: '${orderDate}', fullName: '${order.fullName}', phone: '${order.phone}', city: '${order.city}', carModel: '${order.carModel}', clientType: '${order.clientType}', payMethod: '${order.payMethod}', status: '${status}'})">تحميل كإيصال مطبوع</button>
+                        </div>
+                        <div class="action-row">
+                            <button class="btn-action contact-btn" onclick="updateStatus('${key}', 'تم التواصل')">تم التواصل</button>
+                            <button class="btn-action archive-btn" onclick="updateStatus('${key}', 'أرشيف')">أرشفة</button>
+                            <button class="btn-action delete-btn" onclick="deleteOrder('${key}')">حذف</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function saveSingleOrderFile(orderNum, orderData) {
+            const receiptContent = `
+==================================================
+              معرض أهل كار للسيارات الفاخرة
+         [ إيصال / وثيقة تسجيل طلب عميل رسمي ]
+==================================================
+
+  [#] رقم الطلب الرسمي   : #${orderNum}
+  [📅] تاريخ ووقت الطلب : ${orderData.date}
+  --------------------------------------------------
+  [👤] اسم العميل الرباعي : ${orderData.fullName}
+  [📱] رقم جوال التواصل   : ${orderData.phone}
+  [📍] مدينة الإقامة      : ${orderData.city}
+  --------------------------------------------------
+  [🚘] السيارة المطلوبة   : ${orderData.carModel}
+  [🔹] نوع العميل        : ${orderData.clientType}
+  [💳] طريقة الدفع       : ${orderData.payMethod}
+  --------------------------------------------------
+  حالة الطلب الحالية في النظام : [ ${orderData.status} ]
+
+==================================================
+  ملاحظة: هذه الوثيقة صادرة إلكترونياً من نظام إدارة
+  الطلبات الخاص بمعرض أهل كار، وهي معتمدة للمتابعة.
+==================================================
+`;
+
+            const blob = new Blob([receiptContent], { type: 'text/plain;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AhlCar_Receipt_${orderNum}.txt`;
+            a.click();
+        }
+
+        function updateStatus(key, newStatus) {
+            database.ref('orders/' + key).update({ status: newStatus });
+        }
+
+        function deleteOrder(key) {
+            if (confirm('هل أنت متأكد من حذف هذا الطلب نهائياً؟')) {
+                database.ref('orders/' + key).remove();
+            }
+        }
+    </script>
+</body>
+</html>
